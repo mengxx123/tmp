@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="./iconfont/material-icons.css"> -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/material-design-icons/3.0.1/iconfont/material-icons.css">
+    <style>
+        .canvas {
+            width: 320px;
+            height: 320px;
+            border: 1px solid #eee;
+            box-shadow: rgba(0, 0, 0, 0.118) 0px 1px 6px, rgba(0, 0, 0, 0.118) 0px 1px 4px;
+        }
+    </style>
+</head>
+<body>
+
+
+<canvas id="canvas" class="canvas"></canvas>
+<script>
+    function drawCircle(radius) {
+        let canvas = document.getElementById('canvas')
+        let ctx = canvas.getContext('2d')
+        let WIDTH = 320
+        let HEIGHT = 320
+        canvas.width = ctx.width = WIDTH
+        canvas.height = ctx.height = HEIGHT
+        ctx.fillStyle = '#000'
+        ctx.beginPath()
+        if (radius > 100) {
+            radius = 100
+        }
+        ctx.arc(WIDTH / 2, HEIGHT / 2, radius, 0, Math.PI * 2)
+        ctx.stroke()
+    }
+
+    function drawRect(width, height) {
+        let canvas = document.getElementById('canvas')
+        let ctx = canvas.getContext('2d')
+        canvas.width = ctx.width = 320
+        canvas.height = ctx.height = 320
+        ctx.fillStyle = '#666'
+        ctx.beginPath()
+
+        let HEIGHT = 320
+        let WIDTH = 320
+        let MAX = 280
+
+        if (height > width) {
+            let tmp = height
+            height = width
+            width = tmp
+        }
+        let max = Math.max(width, height)
+        if (width > MAX) {
+            height = height / width * MAX
+            width = MAX
+        }
+
+        let x = (WIDTH - width) / 2
+        let y = (HEIGHT - height) / 2
+        ctx.rect(x, y, width, height)
+        ctx.stroke()
+    }
+
+//    drawRect(300, 100)
+//    drawCircle(20)
+    function drawParallelogram(base, height) {
+        let canvas = document.getElementById('canvas')
+        let ctx = canvas.getContext('2d')
+        canvas.width = ctx.width = 320
+        canvas.height = ctx.height = 320
+        ctx.fillStyle = '#666'
+        ctx.beginPath()
+
+        let HEIGHT = 320
+        let WIDTH = 320
+        let MAX = 280
+
+        if (height > base) {
+            let tmp = height
+            height = base
+            base = tmp
+        }
+        let max = Math.max(base, height)
+        if (base > MAX) {
+            height = height / base * MAX
+            base = MAX
+        }
+
+        let OFFSET = 40
+        let x = (WIDTH - base - OFFSET) / 2
+        let y = (HEIGHT - height) / 2
+
+        // 平行四边形
+        ctx.beginPath()
+        ctx.moveTo(x, (HEIGHT + height) / 2)
+        ctx.lineTo(x + base, (HEIGHT + height) / 2)
+        ctx.lineTo(x + base + OFFSET, (HEIGHT - height) / 2)
+        ctx.lineTo(x + OFFSET, (HEIGHT - height) / 2)
+        ctx.lineTo(x, (HEIGHT + height) / 2)
+        ctx.stroke()
+
+        // 高
+        ctx.beginPath()
+        ctx.moveTo(x + OFFSET, (HEIGHT + height) / 2)
+        ctx.lineTo(x + OFFSET, (HEIGHT - height) / 2)
+        ctx.setLineDash([4, 4])
+        ctx.stroke()
+
+        // 直角
+        let ANGLE_SIZE = 10
+        ctx.beginPath()
+        ctx.moveTo(x + OFFSET, (HEIGHT + height) / 2 - ANGLE_SIZE)
+        ctx.lineTo(x + OFFSET + ANGLE_SIZE, (HEIGHT + height) / 2 - ANGLE_SIZE)
+        ctx.lineTo(x + OFFSET + ANGLE_SIZE, (HEIGHT + height) / 2)
+        ctx.setLineDash([])
+        ctx.stroke()
+
+        // a
+        ctx.font = '20px Georgia'
+        ctx.fillText('a', 200, 200)
+
+        ctx.fillText('a', 10, 50)
+    }
+
+    drawParallelogram(200, 100)
+
+    function drawNumberLine() {
+        let canvas = document.getElementById('canvas')
+        let ctx = canvas.getContext('2d')
+        let WIDTH = 320
+        let HEIGHT = 320
+
+        canvas.width = ctx.width = WIDTH
+        canvas.height = ctx.height = HEIGHT
+        ctx.fillStyle = '#000'
+        ctx.beginPath()
+
+        ctx.beginPath()
+        ctx.moveTo(0, HEIGHT / 2)
+        ctx.lineTo(WIDTH, HEIGHT / 2)
+        ctx.stroke()
+    }
+
+//    drawNumberLine()
+</script>
+</body>
+</html>
