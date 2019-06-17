@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyFirstThreeD</title>
+    <style>
+    canvas {
+        border: 1px solid #f00;
+    }
+    </style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="800"></canvas>
+<script>
+    
+
+    let canvas = document.getElementById('canvas')
+    let ctx = canvas.getContext('2d')
+
+    ctx.globalCompositeOperation = 'lighter'
+
+    ctx.fillStyle = 'rgb(255, 0, 0, 1)'
+    ctx.arc(50, 50, 50, 0, 2 * Math.PI)
+    // ctx.rect(0, 0, 100, 100)
+    ctx.fill()
+
+    ctx.fillStyle = 'rgb(0, 255, 0, 1)'
+    ctx.beginPath()
+    ctx.arc(100, 50, 50, 0, 2 * Math.PI)
+    // ctx.rect(50, 50, 100, 100)
+    ctx.fill()
+
+    ctx.fillStyle = 'rgb(0, 0, 255, 1)'
+    ctx.beginPath()
+    ctx.arc(80, 80, 50, 0, 2 * Math.PI)
+    // ctx.rect(30, 0, 100, 100)
+    ctx.fill()
+
+
+</script>
+</body>
+</html>
