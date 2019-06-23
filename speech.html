@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sketchpad demo</title>
+    <style type="text/css">
+        canvas {
+            border: 1px blue solid; 
+        }
+    </style>
+</head>
+<body>
+        http://api.microsofttranslator.com/V2/Http.svc/Speak?language=en-US&appid=21CB54D8DCFE6FB7202A7FEE37B619A50180E3E6&format=audio/mp3&options=MaxQuality&text=hello
+        
+        这些 TTS API 可以单独或结合其它认知服务一起使用，比如语音转文本和语言理解 API，从而打造出一套全面的在线式（或基于设备的）语音驱动解决方案。
+    <script type="text/javascript">
+        function textspeak(txt,lang)
+        {
+                //http://api.microsofttranslator.com/V2/Http.svc/Speak?language="+lang+"&appid=21CB54D8DCFE6FB7202A7FEE37B619A50180E3E6&format=audio/mp3&options=MaxQuality&text="+encodeURIComponent(txt)+"
+                //http://www.bing.com/translator/api/language/Speak?locale=en-US&gender=female&media=audio/mp3&text=style
+                //http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=api
+                if (typeof(Worker) !== "undefined") 
+                {
+                    document.getElementById("readword").src="//www.cilin.org/images/speaking.gif";
+                    if(!document.getElementById("cilin_speak_palyer")){
+                        document.getElementById("speaking").innerHTML="<audio id='cilin_speak_palyer' src='//fanyi.baidu.com/gettts?lan="+lang+"&ie=UTF-8&text="+encodeURIComponent(txt)+"&spd=1&source=web' autoplay='autoplay'></audio>";
+                        var audio = document.getElementById("cilin_speak_palyer"); 
+                        audio.loop = false;
+                        audio.addEventListener('ended', function () {  
+                            document.getElementById("readword").src="//www.cilin.org/images/speak.gif";
+                        }, false);
+                        audio.play();
+                    }else{
+                        var audio = document.getElementById("cilin_speak_palyer"); 
+                        audio.play();
+                    }
+                }else{
+                    document.getElementById("readword").src="//www.cilin.org/images/speaking.gif";
+                    document.getElementById("speaking").innerHTML = "&nbsp;<bgsound id='cilin_speak_palyer' src='//fanyi.baidu.com/gettts?lan="+lang+"&ie=UTF-8&text="+encodeURIComponent(txt)+"&spd=1&source=web' loop='1'></bgsound>";
+                    window.setTimeout('document.getElementById("readword").src="//www.cilin.org/images/speak.gif"',3000);
+                }	
+
+        }
+    </script>
+</body>
+</html>

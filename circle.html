@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .editor {
+            width: 500px;
+            margin: 24px auto;
+        }
+        canvas {
+            border: 1px solid #000;
+        }
+        .range {
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    {{ message }}
+    <div class="editor">
+        <canvas id="canvas"></canvas>
+        <br>
+        <input class="range" id="range" type="range" value="0" step="0.01" min="0" max="1" />
+        <button type="button" id="play">播放</button>
+        <div>{{ time }}/{{ totalTime / 1000 }}</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                time: '00:00',
+                message: 'Hello Vue!',
+                curTime: 0,
+                totalTime: 10 * 1000
+            }
+        },
+        mounted() {
+            let canvas = document.getElementById('canvas')
+            let padding = 16
+            let r = 80
+
+            let width = 500
+            let height = 300
+
+            let canvasWidth = (r + padding) * 2
+            canvas.width = width
+            canvas.height = height
+            let ctx = canvas.getContext('2d')
+            ctx.width = width
+            ctx.height = height
+            let center = {
+                x: r + padding,
+                y: r + padding,
+            }
+            
+            // ctx.beginPath()
+            // ctx.arc(center.x, center.y, r, 0, 2 * Math.PI)
+            // // ctx.rect(0, 0, 100, 100)
+            // ctx.stroke()
+
+
+            let x = 100
+            let y = 100
+
+            
+            let progress = 0.1
+
+            function draw(progress) {
+                console.log('draw', progress)
+                ctx.clearRect(0, 0, width, height)
+                
+
+                function drawDot(x, y) {
+                    ctx.beginPath()
+                    ctx.arc(x, y, 4, 0, 2 * Math.PI)
+                    ctx.fillStyle = '#000'
+                    ctx.fill()
+                }
+
+                function drawLine(x, y, x2, y2) {
+                    ctx.stokeStyle = '#333'
+                    ctx.beginPath()
+                    ctx.moveTo(x, y)
+                    ctx.lineTo(x2, y2)
+                    ctx.stroke()
+                }
+                
+                let center = {
+                    x,
+                    y
+                }
+                let radius = 80
+                
+                
+                let objects = [
+                    {
+                        startFrame: 0,
+                        frameDuration: 1,
+                        draw() {
+                            ctx.fillStyle = '#333'
+                            ctx.font = "40px Georgia"
+                            ctx.textBaseline = 'middle'
+                            ctx.textAlign = 'center'
+                            ctx.fillText('什么是圆', width / 2, height / 2)
+                        }
+                    },
+                    {
+                        startProgress: 0.1,
+                        frameLength: 0.1,
+                        draw() {
+                            ctx.beginPath()
+                            ctx.moveTo(center.x, center.y)
+                            ctx.lineTo(center.x, center.y + radius)
+                            ctx.strokeStyle = 'f00'
+                            ctx.stroke()
+                            drawDot(center.x, center.y)
+                            drawDot(center.x, center.y + radius)
+                        }
+                    },
+                    {
+                        startProgress: 0.2,
+                        frameLength: 0.7,
+                        // startFrame: 0,
+                        // frameDuration: 1,
+                        draw() {
+                            ctx.beginPath()
+                            // ctx.moveTo(center.x, center.y)
+                            ctx.arc(100 + progress * 300, y, 20, 0, 2 * Math.PI)
+                            // ctx.rect(0, 0, 100, 100)
+                            ctx.fillStyle = 'rgba(0, 0, 0, .34)'
+                            ctx.fill()
+                        }
+                    },
+                    {
+                        startProgress: 0.9,
+                        frameLength: 0.1,
+                        // endProgress: 0.1,
+                        draw() {
+                            ctx.fillStyle = '#333'
+                            ctx.font = "40px Georgia"
+                            ctx.textBaseline = 'middle'; //设置文本的垂直对齐方式
+                            ctx.textAlign = 'center';//设置文本的水平对齐方式
+                            ctx.fillText('播放结束，谢谢', width / 2, height / 2)
+                        }
+                    },
+                ]
+
+                for (let i = 0; i < objects.length; i++) {
+                    if (objects[i].frameDuration) {
+                        objects[i].startProgress = 0
+                        objects[i].frameLength = objects[i].frameDuration / 10
+                    }
+                }
+
+                for (let obj of objects) {
+                    if (progress >= obj.startProgress && progress < obj.startProgress + obj.frameLength) {
+                        obj.draw()
+                    }
+                }
+
+                console.log('asas')
+            }
+
+            draw(progress)
+
+            document.getElementById('range').addEventListener('input', e => {
+                console.log('INPUT', e.target.value)
+                let progress = e.target.value
+                this.curTime = this.totalTime * progress
+                let curSecond = this.curTime / 1000
+                this.time = `${Math.floor(curSecond / 60)}:${Math.ceil(curSecond % 60)}`
+                draw(e.target.value)
+            })
+            document.getElementById('play').addEventListener('click', e => {
+                // console.log(e.target.value)
+                progress = 0
+                draw(progress)
+                
+                let timer = setInterval(() => {
+                    if (progress > 1) {
+                        clearInterval(timer)
+                        return
+                    }
+                    progress += 0.01
+                    if (progress <= 1) {
+                        draw(progress)
+                    }
+                    document.getElementById('range').value = progress
+                }, this.totalTime / 100)
+            })
+        },
+        methods: {
+
+        }
+    })
+
+    
+    
+</script>
+
+</body>
+</html>

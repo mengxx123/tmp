@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyFirstThreeD</title>
+    <style>
+    canvas {
+        border: 1px solid #f00;
+    }
+    </style>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="800"></canvas>
+<script>
+    class Point {
+        constructor(x, y) {
+            this.x = x
+            this.y = y
+        }
+    }
+
+    class Line {
+        
+        constructor(pt1, pt2) {
+            this.pt1 = pt1
+            this.pt2 = pt2
+        }
+
+        getX(y) {
+            return (y - this.pt2.y) / (this.pt1.y - this.pt2.y) * (this.pt1.x - this.pt2.x) + this.pt2.x
+        }
+
+        getY(x) {
+            return (x - this.pt2.x) / (this.pt1.x - this.pt2.x) * (this.pt1.y - this.pt2.y) + this.pt2.y
+        }
+    }
+
+    let canvas = document.getElementById('canvas')
+    let ctx = canvas.getContext('2d')
+
+    // ctx.globalCompositeOperation = 'lighter'
+    // Mirror
+    let planarMirror = {
+        x: 300,
+        y: 400,
+        width: 200,
+        height: 4
+    }
+    ctx.beginPath()
+    ctx.rect(planarMirror.x, planarMirror.y, planarMirror.width, planarMirror.height)
+    ctx.fillStyle = '#09c'
+    // ctx.fill()
+    ctx.stroke()
+    // flashlight
+    let flashlight = {
+        x: 100,
+        y: 0,
+        width: 100,
+        height: 200
+    }
+    ctx.beginPath()
+    ctx.rect(flashlight.x, flashlight.y, flashlight.width, flashlight.height)
+    ctx.lineWidth = 4
+    ctx.fillStyle = '#09c'
+    ctx.stroke()
+    ctx.fill()
+
+    let pt1 = {
+        x: flashlight.x,
+        y: flashlight.y
+    }
+    let pt2 = {
+        x: flashlight.x + flashlight.width,
+        y: flashlight.y + flashlight.height
+    }
+    let lightLine = new Line(pt1, pt2)
+
+    // (y - pt2.y) / (pt1.y - pt2.y) = (x - pt2.x) / (pt1.x - pt2.x)
+    // let y = (300 - pt2.x) / (pt1.x - pt2.x) * (pt1.y - pt2.y) + pt2.y
+    // console.log('y', y)
+    let crossX = lightLine.getX(400)
+    console.log('crossX', crossX)
+    let lines = [
+        {
+            x: 0,
+            y: 0
+        },
+        {
+            x: 300,
+            y: 300
+        },
+        {
+            x: 100,
+            y: 400
+        },
+    ]
+    if (crossX >= planarMirror.x && crossX <= planarMirror.x + planarMirror.width) {
+        console.log('交叉')
+        let pt3 = {
+            x: crossX + 100,
+            y: lightLine.getY(crossX - 100)
+        }
+        let pt4 = {
+            x: crossX + 200,
+            y: lightLine.getY(crossX - 200)
+        }
+        console.log('pt3', pt3)
+        console.log('pt4', pt4)
+        let lightLine2 = new Line(pt3, pt4)
+        console.log('啊啊啊', lightLine2.getX(0))
+
+        lines = [
+            {
+                x: flashlight.x,
+                y: flashlight.y
+            },
+            {
+                x: lightLine.getX(400),
+                y: 400
+            },
+            {
+                x: lightLine2.getX(0),
+                y: 0
+            },
+        ]
+    } else {
+        console.log('没有交叉')
+        lines = [
+            {
+                x: flashlight.x,
+                y: flashlight.y
+            },
+            {
+                x: lightLine.getX(800),
+                y: 800
+            },
+        ]
+    }
+
+    
+
+    // light
+    ctx.strokeStyle = '#f00'
+    ctx.beginPath()
+    ctx.moveTo(lines[0].x, lines[0].y)
+    for (let i = 1; i < lines.length; i++) {
+        ctx.lineTo(lines[i].x, lines[i].y)
+    }
+    ctx.lineWidth = 4
+    ctx.stroke()
+    
+    
+</script>
+</body>
+</html>
