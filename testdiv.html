@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .canvas {
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div>Manipulatives illustration:</div>
+    <div>Visual representation:</div>
+<canvas class="canvas" id="canvas" width="300" height="300"></canvas>    
+<canvas class="canvas" id="canvas2" width="300" height="300"></canvas>    
+<script>
+    let canvas = document.getElementById('canvas')
+    let ctx = canvas.getContext('2d')
+    // ctx.fillRect(0, 0, 100, 100)
+    function drawNumber(ctx, num, startX, startY) {
+        const grid = 16
+        const offset = 4
+        const pad = 8
+        let tenNumber = Math.floor(num / 10)
+        if (tenNumber > 0) {
+            ctx.fillStyle = '#789cdc'
+            for (let n = 0; n < tenNumber; n++) {
+                for (let i = 0; i < 10; i++) {
+                    let x = n * (grid + offset)
+                    let y = i * (grid + offset)
+                    ctx.fillRect(x + startX + pad, y + startY + pad, grid, grid)
+                }
+            }
+            // ctx.fillRect(0, 30, grid, grid)
+        }
+        let restNumber = num % 10
+        if (restNumber) {
+            ctx.fillStyle = '#6ea119'
+            // ctx.fillRect(grid + offset, 0, grid, grid)
+            for (let i = 0; i < restNumber; i++) {
+                let x = tenNumber * (grid + offset) + ((i % 2 === 0) ? 0 : grid + offset)
+                let y = (Math.floor(i / 2)) * (grid + offset)
+                console.log(x, y)
+                ctx.fillRect(x + startX + pad, y + startY + pad, grid, grid)
+            }
+        }
+
+        let width = 100
+        ctx.rect(startX, startY, width, height)
+        ctx.stroke()
+    }
+    // drawNumber(ctx, 34, 30, 30)
+
+    function drawLine(ctx, num) {
+        if (num > 20) {
+            return
+        }
+        ctx.fillStyle = '#888'
+        for (let i = 0; i < num; i++) {
+            let x = (i + 1) * 20
+            ctx.arc(x, 30, 6, 0, 2 * Math.PI)
+            ctx.fill()
+        }
+    }
+    drawLine(ctx, 20)
+</script>
+</body>
+</html>
