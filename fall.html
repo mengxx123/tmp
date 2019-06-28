@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="500" style="border: 1px solid #f00;"></canvas>
+    <script src="https://cdn.bootcss.com/tween.js/r14/Tween.min.js"></script>
+    <!-- <script src="tween.js"></script> -->
+
+    <script>
+        // const box = document.createElement('div');
+        // box.style.setProperty('background-color', '#008800');
+        // box.style.setProperty('width', '100px');
+        // box.style.setProperty('height', '100px');
+        // document.body.appendChild(box);
+
+        // // Setup the animation loop.
+        // function animate(time) {
+        //     requestAnimationFrame(animate);
+        //     TWEEN.update(time);
+        // }
+        // requestAnimationFrame(animate);
+
+        // const coords = { x: 0, y: 0 }; // Start at (0, 0)
+        // const tween = new TWEEN.Tween(coords) // Create a new tween that modifies 'coords'.
+        //         .to({ x: 300, y: 200 }, 1000) // Move to (300, 200) in 1 second.
+        //         .easing(TWEEN.Easing.Quadratic.Out) // Use an easing function to make the animation smooth.
+        //         .onUpdate(() => { // Called after tween.js updates 'coords'.
+        //             // Move 'box' to the position described by 'coords' with a CSS translation.
+        //             box.style.setProperty('transform', `translate(${coords.x}px, ${coords.y}px)`);
+        //         })
+        //         .start(); // Start the tween immediately.
+
+
+        let canvas = document.getElementById('canvas')
+        let ctx = canvas.getContext('2d')
+
+
+        function reDraw(coords) {
+            console.log('draw', coords)
+            var pt = {
+                x: 100,
+                y: 100
+            }
+            ctx.beginPath()
+            ctx.clearRect(0, 0, 800, 500)
+            ctx.arc(coords.x, coords.y, 8, 0, 2 * Math.PI)
+            ctx.fill()
+        }
+
+        let coords = { x: 100, y: 100 }
+        const tween = new TWEEN.Tween(coords)
+                .to({ y: 300 }, 1000)
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .start()
+
+        // let pt = {
+        //     x: 100,
+        //     y: 100
+        // }
+        // let tween = new Tween.Linear(pt)
+        // tween.to({x: 700}, 1000)
+
+        // tween.start()
+        function update() {
+            // let time = (new Date().getTime() - startTime) % 2000
+            // let progress = time / 2000
+            // console.log('update!', progress)
+            requestAnimationFrame(update)
+            // TWEEN.update()
+            
+            coords.x = 100
+            coords.y = easeOut(25, 0, 100, 100) 
+            
+
+            reDraw(coords)
+        }
+        requestAnimationFrame(update)
+
+
+//         t: current time（当前时间）；
+//  * b: beginning value（初始值）；
+//  * c: change in value（变化量）；
+//  * d: duration（持续时间）。
+        function easeOut(t, b, c, d) {
+            return -c *(t /= d)*(t-2) + b;
+        }
+        console.log('easeOut', easeOut(25, 0, 100, 100))
+    </script>
+</body>
+
+</html>
