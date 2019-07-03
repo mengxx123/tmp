@@ -56,7 +56,7 @@
         }
     }
 
-    console.log('getAngle', getAngle(0, -100))
+    console.log('getAngle', getAngle(-101, 0))
 
     class Point {
         constructor(x, y) {
@@ -109,28 +109,162 @@
         let topHeight = 20
         drawPt(topCenter)
         ctx.beginPath()
-        ctx.rect(topCenter.x - topWidth / 2, topCenter.y - topHeight / 2, topWidth, topHeight)
+        // ctx.rect(topCenter.x - topWidth / 2, topCenter.y - topHeight / 2, topWidth, topHeight)
         ctx.stroke()
 
-        for (let i = 0; i < 10; i++) {
-          ctx.beginPath()
-          ctx.moveTo(topCenter.x + 20 * i, topCenter.y)
-          ctx.lineTo(topCenter.x + 20 * i, topCenter.y - 20)
-          ctx.stroke()
-        }
+        
 
         function justAngle(angle, djust) {
           return angle + djust
         }
 
-        let angle = 45
+        let angle = 20
 
-        let x1 = topCenter.x + 100 * Math.cos(angle * Math.PI / 180)
-        let y1 = topCenter.y + 100 * Math.sin(angle * Math.PI / 180) 
-        drawPt({
-          x: x1,
-          y: y1
+        // let x1 = topCenter.x + 100 * Math.cos(angle * Math.PI / 180)
+        // let y1 = topCenter.y + 100 * Math.sin(angle * Math.PI / 180) 
+        // drawPt({
+        //   x: x1,
+        //   y: y1
+        // })
+        // let x2 = (topCenter.x) + 100 * Math.cos(angle * Math.PI / 180)
+        // let y2 = (topCenter.y + 10) + 100 * Math.sin(angle * Math.PI / 180) 
+        // drawPt({
+        //   x: x2,
+        //   y: y2
+        // })
+
+        function getRotatePt(pt) {
+            let rad = angle * Math.PI / 180
+            return {
+                x: (pt.x - topCenter.x) * Math.cos(rad) - (pt.y - topCenter.y) * Math.sin(rad) + topCenter.x,
+                y: (pt.x - topCenter.x) * Math.sin(rad) + (pt.y - topCenter.y) * Math.cos(rad) + topCenter.y
+            }
+        }
+
+        let a = {
+            x: topCenter.x + 100,
+            y: topCenter.y
+        }
+        // drawPt(a)
+
+        // let rad = angle * Math.PI / 180
+        // let x3 = {
+        //     x: (a.x - topCenter.x) * Math.cos(rad) - (a.y - topCenter.y) * Math.sin(rad) + topCenter.x,
+        //     y: (a.x - topCenter.x) * Math.sin(rad) + (a.y - topCenter.y) * Math.cos(rad) + topCenter.y
+        // }
+        let x1 = getRotatePt({
+            x: topCenter.x - topWidth / 2,
+            y: topCenter.y - topHeight / 2
         })
+        // drawPt(x1)
+        let x2 = getRotatePt({
+            x: topCenter.x + topWidth / 2,
+            y: topCenter.y - topHeight / 2
+        })
+        // drawPt(x2)
+
+
+        let x3 = getRotatePt({
+            x: topCenter.x + topWidth / 2,
+            y: topCenter.y + topHeight / 2
+        })
+        // drawPt(x3)
+        let x4 = getRotatePt({
+            x: topCenter.x - topWidth / 2,
+            y: topCenter.y + topHeight / 2
+        })
+        // drawPt(x4)
+        ctx.beginPath()
+        ctx.moveTo(x1.x, x1.y)
+        ctx.lineTo(x2.x, x2.y)
+        ctx.lineTo(x3.x, x3.y)
+        ctx.lineTo(x4.x, x4.y)
+        ctx.closePath()
+        ctx.stroke()
+
+        for (let i = 0; i < 5; i++) {
+          ctx.beginPath()
+          let pt1 = getRotatePt({
+            x: topCenter.x + 20 * i,
+            y: topCenter.y - topHeight / 2
+          })
+          let pt2 = getRotatePt({
+              x: topCenter.x + 20 * i,
+              y: topCenter.y + topHeight / 2
+          })
+          ctx.moveTo(pt1.x, pt1.y)
+          ctx.lineTo(pt2.x, pt2.y)
+          ctx.stroke()
+        }
+        for (let i = 0; i < 5; i++) {
+          ctx.beginPath()
+          let pt1 = getRotatePt({
+            x: topCenter.x - 20 * i,
+            y: topCenter.y - topHeight / 2
+          })
+          let pt2 = getRotatePt({
+              x: topCenter.x - 20 * i,
+              y: topCenter.y + topHeight / 2
+          })
+          ctx.moveTo(pt1.x, pt1.y)
+          ctx.lineTo(pt2.x, pt2.y)
+          ctx.stroke()
+        }
+
+        let distanceLeft = 2
+        let distancePtLeft = getRotatePt({
+            x: topCenter.x + 20 * distanceLeft,
+            y: topCenter.y + topHeight / 2
+        })
+        let ropeLength = 60
+        let distancePtLeft2 = {
+            x: distancePtLeft.x,
+            y: distancePtLeft.y + ropeLength
+        }
+        // drawPt(distancePtLeft)
+        ctx.beginPath()
+        ctx.moveTo(distancePtLeft.x, distancePtLeft.y)
+        ctx.lineTo(distancePtLeft2.x, distancePtLeft2.y)
+        ctx.stroke()
+
+        let boxSize = 32
+
+        ctx.beginPath()
+        ctx.rect(distancePtLeft2.x - boxSize / 2, distancePtLeft2.y - boxSize / 2, boxSize, boxSize)
+        ctx.fillStyle = '#fff'
+        ctx.fill()
+        ctx.stroke()
+
+        let distanceRight = 3
+        let distancePtRight = getRotatePt({
+            x: topCenter.x - 20 * distanceRight,
+            y: topCenter.y + topHeight / 2
+        })
+        // let ropeLength = 60
+        let distancePtRight2 = {
+            x: distancePtRight.x,
+            y: distancePtRight.y + ropeLength
+        }
+        // drawPt(distancePtLeft)
+        ctx.beginPath()
+        ctx.moveTo(distancePtRight.x, distancePtRight.y)
+        ctx.lineTo(distancePtRight2.x, distancePtRight2.y)
+        ctx.stroke()
+
+        // let boxSize = 32
+
+        ctx.beginPath()
+        ctx.rect(distancePtRight2.x - boxSize / 2, distancePtRight2.y - boxSize / 2, boxSize, boxSize)
+        ctx.fillStyle = '#fff'
+        ctx.fill()
+        ctx.stroke()
+        
+
+//         b.x = a.xcos(angle) - a.ysin(angle)
+
+// b.y = a.xsin(angle) + a.ycos(angle)
+
+
 
         leverHeight = 200
         let bottomCenter = {
