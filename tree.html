@@ -2,14 +2,164 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>float</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        canvas {
+            border: 1px solid #f00;
+        }
+    </style>
 </head>
 <body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    
 <script>
-    console.log('asas')
-    let text = '(1(2(4(8)(9))(5(10))(3(6)(7))'
+    let canvas = document.getElementById('canvas')
+    let ctx = canvas.getContext('2d')
+
+    let bigCupMaxWaterHeight = 160
+    let bigCupWaterHeight = bigCupMaxWaterHeight
+
+    function drawPt(pt) {
+        ctx.fillStyle = '#000'
+        ctx.beginPath()
+        ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2)
+        ctx.fill()
+    }
+
+
+    let tree = {
+        text: '1',
+        children: [
+            {
+                text: '1-1',
+                children: [
+                    {
+                        text: '1-1-1',
+                    },
+                ]
+            },
+            {
+                text: '1-2',
+                children: [
+                    {
+                        text: '1-2-1',
+                    },
+                    {
+                        text: '1-2-2',
+                    }    
+                ]
+            }
+        ]
+    }
+
+    // // 前序遍历 根左右 
+    // // 中序遍历 左根右
+    // 后序遍历 左右根
+    let maxLevel = 0
+    let maxWidth = 0
+    let grid = 80
+    // let 
+    let totalGrid = 0
+    function mapTree(node, parent) {
+        console.log(node.text)
+        node.level = parent ? (parent.level + 1) : 1
+        
+        if (node.children && node.children.length) {
+            for (let child of node.children) {
+                mapTree(child, node)
+            }
+            let all = 0
+            for (let child of node.children) {
+                all += child.width
+            }
+            node.width = all
+            if (node.width > maxWidth) {
+                maxWidth = node.width
+            }
+        } else {
+            node.width = 1
+        }
+    }
+
+    mapTree(tree)
+
+    console.log('前序遍历')
+    function preOrder(node) {
+        console.log(node.text)
+        if (node.children && node.children.length) {
+            for (let child of node.children) {
+                preOrder(child, node)
+            }
+        }
+    }
+    preOrder(tree)
+    console.log('中序遍历')
+    function inOrder(node) {
+        console.log(node.text)
+        if (node.children && node.children.length) {
+            for (let child of node.children) {
+                inOrder(child, node)
+            }
+        }
+    }
+    inOrder(tree)
+
+    console.log('tree', tree)
+
+    // let levelMap = {}
+
+    function redraw() {
+
+        // ctx.clearRect(0, 0, 800, 800)
+
+        // function drawTree(node) {
+        //     let top = (node.level) * 80
+        //     let m = levelMap[node.level]
+        //     if (!m) {
+        //         m = 0
+        //         levelMap[node.level] = 0
+        //     }
+            
+        //     let a = (node.width / 2) < 1 ? 1 : (node.width / 2)
+
+        //     console.log(`${node.text}: ${(m + node.width) / 2}`)
+
+        //     let left = m + a * 80
+        //     levelMap[node.level] += node.width
+        //     console.log('draw', node)
+        //     drawPt({
+        //         x: left,
+        //         y: top
+        //     })
+
+        //     if (node.children && node.children.length) {
+        //         for (let child of node.children) {
+        //             drawTree(child, node)
+        //         }
+        //     }
+        // }
+        // drawTree(tree)
+        
+        // ctx.beginPath()
+        // ctx.moveTo(0, 0)
+        // ctx.lineTo(800, 800)
+        // ctx.stroke()
+    
+    }
+
+    redraw()
+
+    // function update() {
+    //     requestAnimationFrame(update)
+    //     // redraw()
+    // }
+    // update()
+    
 </script>
 </body>
 </html>
