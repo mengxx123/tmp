@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>部分分组</title>
+</head>
+<body>
+    条件：二十六个人每天随机出现六个七天内不出现重复种类且每个人至少去一次
+    <br>
+    结果：<div id="result"></div>
+
+    
+<script>
+    if (!Array.prototype.shuffle) {
+    Array.prototype.shuffle = function() {
+        for(var j, x, i = this.length; i; j = parseInt(Math.random() * i), x = this[--i], this[i] = this[j], this[j] = x);
+        return this;
+    };
+}
+
+let arr = []
+let arr2 = []
+for (let i = 1; i <= 26; i++) {
+  arr.push(i)
+  arr2.push(i)
+}
+arr.shuffle()
+arr2.shuffle()
+let all = arr.concat(arr2)
+  console.log()
+  let group = []
+  for (let idx = 0; idx < 7; idx++) {
+    let start = idx * 7
+    let g = []
+    for (let s = 0; s < 6; s++) {
+      g.push(all[s + start])
+    }
+    group.push(g)
+  }
+  console.log('g', group)
+  document.getElementById('result').innerHTML = group.map((item, index) => {
+    return '第' + (index + 1) + '天：' + item.join(', ')
+  }).join('<br>')
+</script>
+</body>
+</html>
