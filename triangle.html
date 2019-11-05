@@ -26,14 +26,19 @@
         let ctx = canvas.getContext('2d')
         // console.log()
         // ctx.fillRect(20, 20, 80, 80)
+        let GRID = 50
 
+        let pt0 = {
+            x: 116,
+            y: 116
+        }
         let pt1 = {
-            x: 100,
-            y: 100
+            x: pt0.x + 3 * GRID,
+            y: pt0.y
         }
         let pt2 = {
-            x: 300,
-            y: 300
+            x: pt0.x,
+            y: pt0.y + 4 * GRID
         }
         let pts = [
             pt1,
@@ -44,10 +49,7 @@
             return Math.sqrt(Math.pow(pt1.x - pt2.x, 2) + Math.pow(pt1.y - pt2.y, 2))
         }
 
-        let pt0 = {
-            x: 100,
-            y: 300
-        }
+        
 
         function reDraw(progress) {
 
@@ -67,12 +69,12 @@
             ctx.lineTo(pt2.x, pt2.y)
             ctx.closePath()
             ctx.stroke()
-
+            // A 控制点
             ctx.beginPath()
             ctx.arc(pt1.x, pt1.y, 10, 0, 2 * Math.PI)
             ctx.closePath()
             ctx.fill()
-
+            // B 控制点
             ctx.beginPath()
             ctx.arc(pt2.x, pt2.y, 10, 0, 2 * Math.PI)
             ctx.closePath()
@@ -140,18 +142,27 @@
             if (downPtIndex === -1) {
                 return
             }
+            function toInt(num) {
+                return Math.round(num / GRID) * GRID
+            }
             // console.log('offset', originPt.x, mousePt.x - downPt.x)
             if (downPtIndex === 0) {
-                pts[downPtIndex].y = originPt.y + parseInt(mousePt.y - downPt.y)
+                pts[downPtIndex].x = originPt.x + toInt(mousePt.x - downPt.x)
+                if (pts[downPtIndex].x < pt0.x + GRID) {
+                    pts[downPtIndex].x = pt0.x + GRID
+                }
             }
             if (downPtIndex === 1) {
-                pts[downPtIndex].x = originPt.x + parseInt(mousePt.x - downPt.x)
+                pts[downPtIndex].y = originPt.y + toInt(mousePt.y - downPt.y)
+                if (pts[downPtIndex].y < pt0.y + GRID) {
+                    pts[downPtIndex].y = pt0.y + GRID
+                }
             }
             // pts[downPtIndex].x = originPt.x + mousePt.x - downPt.x
             // pts[downPtIndex].y = originPt.y
-            let a = distance(pt0, pt1)
-            let b = Math.round(distance(pt0, pt2))
-            let c = Math.round(distance(pt1, pt2))
+            let a = distance(pt0, pt1) / GRID
+            let b = Math.round(distance(pt0, pt2) / GRID)
+            let c = (distance(pt1, pt2) / GRID).toFixed(6)
             console.log('abc', a, b, c)
             console.log('=', a * a + b * b, c * c)
         })

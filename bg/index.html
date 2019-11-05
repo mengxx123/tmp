@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    
+</head>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<link src="https://cdn.bootcss.com/bootstrap-colorpicker/2.5.2/css/bootstrap-colorpicker.min.css" rel=stylesheet>
+<script src="https://cdn.bootcss.com/bootstrap-colorpicker/2.5.2/js/bootstrap-colorpicker.min.js"></script>
+
+<script>
+//自动获取背景色
+function setImageDependentBackgroundColor(t){
+    var imageToParse = document.getElementById("myimg");
+	var bgres = document.getElementById("imageDependentColor");
+    var width = imageToParse.width;
+    var height = imageToParse.height;
+ 
+    // create an unattached canvas element and draw the image onto it
+    var canvas = document.getElementById("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(imageToParse, 0, 0, width, height);
+    
+
+    var colorArray = Array.from(  // using that canvas element, create an array of color information by...
+      canvas.getContext('2d').getImageData( 
+        // getting ImageData object for a 1x1 pixel located at right edge in the vertical middle (X coordinate, Y coordinate, width, height)
+        Math.ceil(width*0.9), Math.ceil(height*0.1), 1, 1
+      ).data // and return that pixel data in the form of an Uint8ClampedArray: an array of 8-bit (0-255) unsigned integers 
+    );
+
+    colorArray.splice(-1,1); // slice off the unneeded alpha value from that array 
+    
+    // Use that colorArray to construct a style definition for the background color
+	if(t){
+		bgres.style.backgroundColor = 'rgb('+ colorArray.toString() +')';
+	}
+    colorArray = bgres.style.backgroundColor.replace("rgb(","").replace(")","").split(",");
+	var bCtx = canvas.getContext('2d');
+	var imageData = bCtx.getImageData(0,0,width,height);
+	var rongcha = document.getElementById("rongcha").value;
+	RGSA(imageData, [1, 1], colorArray, rongcha );
+	bCtx.putImageData(imageData,0,0);
+}
+
+
+function RGSA (src, seed,value, distance) {
+console.log(distance);
+	var width = src.width,
+		height = src.height,
+		srcData = src.data,
+		getValue = function(x, y) {
+			var i = 4 * (y * width + x)
+			return {
+				r: srcData[i],
+				g: srcData[i+1],
+				b: srcData[i+2],
+				a: srcData[i+3]
+			}
+		},
+		standarValue = getValue(seed[0], seed[1]); 
+		isTolerance = function(x, y) {
+			var targetValue = getValue(x, y)
+			//return distance - calcColorDistance(standarValue.r, standarValue.g, standarValue.b, targetValue.r, targetValue.g, targetValue.b)
+			return rgbSimilarity(value,[targetValue.r,targetValue.g,targetValue.b])
+		},
+		// 种子点
+		seeds = [],
+		// 标记
+		marked = Array(height).fill([])
+
+	for(var i = 0; i < height; i++) {
+		marked[i] = Array(width).fill(0)
+	}
+	
+	seeds.push(seed)
+
+	// 周围八点
+	var surround = [1,0,1,1,0,1,-1,1,-1,0,-1,-1,0,-1,1,-1]
+
+	while (seeds.length > 0) {
+		var seed = seeds.pop()
+		for(var i = 0; i < 8; i++) {
+			var tmpX = seed[0] + surround[2*i]
+			var tmpY = seed[1] + surround[2*i + 1]
+
+			if (tmpX < 0 || tmpY < 0 || tmpX >= width || tmpY >= height ) {
+
+			} else if (marked[tmpY][tmpX] == 0 ) {
+				
+				if (Math.abs(isTolerance(tmpX, tmpY))>=distance) {
+					// 符合容差的点标记为2
+					marked[tmpY][tmpX] = isTolerance(tmpX, tmpY);
+					seeds.push([tmpX, tmpY])
+				} else {
+					// 不符合容差，但遍历过的点标记为1
+					marked[tmpY][tmpX] = 1
+				}
+			}
+		}
+	}
+
+
+	
+	// 将标记的像素设为目标色
+	
+	for (var i = 0; i < height; i++ ) {
+		for(var j = 0; j < width; j++) {
+			if(marked[i][j] >= distance){
+				var tmp = 4 * (i * width + j)
+				//src.data[tmp] = 255
+				//src.data[tmp+1] = 0
+				//src.data[tmp+2] = 0
+				//console.log(marked[tmpY][tmpX]);
+				src.data[tmp+3] = Math.ceil(255*(1-marked[i][j]));
+				//console.log(marked[tmpY][tmpX]);
+			}else{
+				
+				src.data[tmp+3] = Math.ceil(255*(1-marked[i][j]));
+				newPix = normal({ red: 0, green: 0, blue: 255, alpha: 255 },
+                                { red: src.data[tmp], green: src.data[tmp+1], blue: src.data[tmp+2], alpha: 125 });
+
+				if (newPix) {
+						// 将处理好的像素赋值给背景图ImageData（实际上你传给蝴蝶图也没问题，只是下面putImageData的时候需要指向蝴蝶图罢了）
+						src.data[tmp+0] = newPix.red;
+						src.data[tmp+1] = newPix.green;
+						src.data[tmp+2] = newPix.blue;
+						src.data[tmp+3] = newPix.alpha;
+				}
+				
+			}
+		}
+	}
+	return marked
+}
+
+/* 计算rgb色彩空间距离 */
+function calcColorDistance (r1,g1,b1,r2,g2,b2) {
+	var dr = r2 - r1,
+		dg = g2 - g1,
+		db = b2 - b1
+	return Math.sqrt(dr * dr + dg * dg + db * db)
+}
+
+
+
+
+function euclideanDistanceSquare(list1, list2){
+    var sum = 0;
+    for (var i = 0; i < list1.length; i++) {
+        var offset = list1[i] - list2[i];
+        sum += offset * offset;
+    }
+
+    return sum;
+}
+
+var RGB_MAX_DISTANCE_SQUARE = euclideanDistanceSquare([255, 255, 255], [0, 0, 0]); 
+
+function rgbSimilarity (rgb1, rgb2){
+    return 1 - Math.sqrt(euclideanDistanceSquare(rgb1, rgb2) / RGB_MAX_DISTANCE_SQUARE);
+}
+console.log(rgbSimilarity([255,255,255], [0,0,0]));
+
+
+function normal(background, butterfly) {
+        /// <summary>正常模式</summary>
+
+        return {
+            red: Math.min(background.red, butterfly.red),
+            green: Math.min(background.green, butterfly.green),
+            blue: Math.min(background.blue, butterfly.blue),
+            alpha: Math.min(background.alpha, butterfly.alpha)
+        };
+
+}
+function normal2(background, butterfly) {
+        /// <summary>正常模式2</summary>
+
+       return {
+            red: butterfly.red * alpha + background.red * (1 - alpha),
+            green: butterfly.green * alpha + background.green * (1 - alpha),
+            blue: butterfly.blue * alpha + background.blue * (1 - alpha),
+            alpha: butterfly.alpha * alpha + background.alpha * (1 - alpha)
+        }
+
+}
+
+$(function() {
+	document.getElementById('imageDependentColor').onclick = function(){
+		document.getElementById('color').click();
+	};
+	document.getElementById('imageNewColor').onclick = function(){
+		document.getElementById('color2').click();
+	};
+	
+	document.getElementById('color').onchange = function(){
+		document.getElementById("imageDependentColor").style.backgroundColor = this.value;
+		alert("原图背景色系自动识别，修改后可能导致背景色修改不理想！");
+		setImageDependentBackgroundColor(false)
+	};
+	document.getElementById('color2').onchange = function(){
+		document.getElementById("imageNewColor").style.backgroundColor = this.value;
+		document.getElementById("canvas").style.backgroundColor = this.value;
+		setImageDependentBackgroundColor(false)
+	};
+	
+	if (document.getElementById('myimg').complete) {
+        setImageDependentBackgroundColor(true);
+    } else {
+        document.getElementById('myimg').onload = function () {
+            setImageDependentBackgroundColor(true);
+        };
+    };
+	
+
+    var mfileinput=document.getElementById("fileinput");
+	mfileinput.addEventListener('change',readFile,false);
+	
+	
+	
+});
+
+
+
+
+function readFile(){
+			var mmimg=document.getElementById("myimg");
+            var file=this.files[0];
+            if(!/image\/\w+/.test(file.type)){ 
+                alert("请确保文件为图像类型"); 
+                return false; 
+            }
+            var reader=new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload=function(){
+                mmimg.src = this.result; 
+                setImageDependentBackgroundColor(true);
+            }
+}
+
+function downimg(){
+	var canvas = document.getElementById("canvas");
+	var bCtx = canvas.getContext('2d');
+	var imageData = bCtx.getImageData(0,0,canvas.width,canvas.height);
+
+	bCtx.putImageData(imageData,0,0);
+	alert("下载图片背景区域为透明，带背景色图片请通过截图截取！");
+	var img = canvas.toDataURL("image/png");
+	location = img;
+	
+}
+
+
+
+
+</script>
+<body>
+<div class="controls" align="center">
+    
+	
+
+    <button id="imageDependentColor" style="color:gray;">原背景色</button>
+	
+	
+	
+	<button id="imageNewColor" style="background-color:blue;color:gray;">新背景色</button>  
+	<input type="file" id="fileinput">
+	<br><br>
+	<div style="display:inline;vertical-align:text-top;">
+	
+	
+	<input type="range" value="0.85" max=1 min=0.5 step=0.005 id="rongcha" onchange="setImageDependentBackgroundColor(false)"><br>
+	<span style="font-size:12px;color:gray;">（容差：微调来调节图片背景色修改达到最佳效果！）</span>
+	</div>
+</div>
+<div align="center">
+<section class="full-width" style="display:inline" >  
+&nbsp;<img id="myimg" style="max-width:300px;" src="./bg.jpg" alt="image" />&nbsp;<canvas id="canvas" style="background-color:blue"></canvas>
+</section>
+<br><br>
+<button id="downloadimg" style="background-color:blue;color:gray;" onclick="downimg();">下载新图片</button>  
+</div>
+
+<div style="position:absolute;left:-3000px;">
+<input style="position:absolute;left:-3000px;" type="color" id="color" />
+<input style="position:absolute;left:-3000px;" type="color" id="color2" />
+</div>
+</body>
+</html>
