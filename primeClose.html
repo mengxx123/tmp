@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>部分分组</title>
+</head>
+<body>
+    <input id="num" type="number" placeholder="请输入一个大于2，长度小于18位的偶数" value="" /><button id="cal">计算</button>
+    <br>
+    结果：<div id="result"></div>
+    
+    <script>
+      function isPrime(number) {
+        if (typeof number !== 'number' || number<2) {
+            // 不是数字或者数字小于2
+            return false;
+        }
+
+        if (number === 2) {//2是质数
+            return true;
+        } else if (number % 2 === 0) {//排除偶数
+            return false;
+        }
+        var squareRoot = Math.sqrt(number);
+
+        //因为2已经验证过，所以从3开始；且已经排除偶数，所以每次加2
+        for(var i = 3; i <= squareRoot; i += 2) {
+            if (number % i === 0) {
+                return false;
+            }
+        }
+        return true;
+      }
+
+      var last = ''
+      var lastTwo = ''
+
+      function closePrime(num, isLastOne = true, min = 2) {
+        var results = []
+        let lastOne
+        for (var i = min; i < num; i++) {
+          // console.log(i)
+          if (isPrime(i)) {
+            // console.log(`${i} 是素数`)
+            if (last && i - last === 2) {
+              // console.log('找到', last, i)
+              if (isLastOne) {
+                results = [last, i]
+              } else {
+                results.push([last, i])
+              }
+            }
+            // lastTwo = last
+            last = i
+            // continue
+          }
+        }
+        return results
+      }
+
+      function test() {
+        let startTime = new Date().getTime()
+        let base = 1000 * 10000
+        let result = closePrime(4.5 * base, true, 4.2 * base)
+        // 1000 * 10000 3.8s
+        // 2000 * 10000 9.8s
+        // [34999967, 34999969] 1224997760001023
+        // [37999901, 37999903] 1443992552009603
+        // [39999899, 39999901] 1599992000009999
+        // [41999957, 41999959] 1763996472001763
+        // [44999951, 44999953] 2024995680002303
+
+
+        console.log('closePrime(100)', result, result[0] * result[1])
+        let time = new Date().getTime() - startTime
+        console.log(time + 'ms')
+      }
+
+      test()
+
+      
+
+      document.getElementById('cal').addEventListener('click', function () {
+        if (!document.getElementById('num').value) {
+          document.getElementById('result').innerHTML = '请输入'
+          return
+        }
+        let num = parseInt(document.getElementById('num').value)
+        if (num <= 2) {
+          document.getElementById('result').innerHTML = '必须大于 2'
+          return
+        }
+        let results = closePrime(num)
+        document.getElementById('result').innerHTML = results.map(item => {
+          return `${item[0]}, ${item[1]}`
+        }).join('<br>')
+        
+      })
+
+//       var squareRoot = Math.sqrt(number);
+
+// //因为2已经验证过，所以从3开始；且已经排除偶数，所以每次加2
+// for(var i = 3; i <= squareRoot; i += 2) {
+//     if (number % i === 0) {
+//         return false;
+//     }
+// }
+// return true;
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>排序</title>
+  <style>
+    .form {
+      width: 100%;
+      max-width: 400px;
+    }
+    .textarea {
+      width: 100%;
+    }
+    .btn {
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+    <!-- https://github.com/theajack/cnchar -->
+  <div>
+    <form class="form">
+      <textarea class="textarea" id="textarea" rows="8" placeholder="每行一条">三
+一
+中
+四
+二</textarea>
+
+      <button class="btn" id="sortByLetter" type="button">字母排序</button>
+      <!-- <button class="btn" id="sortByLetterDesc" type="button">字母排序</button> -->
+      <button class="btn" id="sortByLength" type="button">长度排序</button>
+      <button class="btn" id="sortByNumber" type="button">数字大小排序</button>
+      <button class="btn" id="sortByPinyin" type="button">中文拼音排序</button>
+      <button class="btn" id="sortByStroke" type="button">中文笔画数排序</button>
+      <button class="btn" id="sortByIp" type="button">IP 排序</button>
+      <!-- <button class="btn" id="sortByLengthDesc" type="button">长度排序（倒序）</button> -->
+      <button class="btn" id="reverse" type="button">顺序反转</button>
+    </form>
+  </div>
+
+  <script src="./cnchar/cnchar.2.0.4.min.js"></script>
+  <script src="./cnchar/cnchar.poly.2.0.4.min.js"></script>
+  <script src="./cnchar/cnchar.order.2.0.4.min.js"></script>
+  <script src="./cnchar/cnchar.trad.2.0.4.min.js"></script>
+  <script>
+
+    // console.log('汉字'.spell());// prototype 方式调用
+    console.log('中', "中".stroke('order','count')) // 返回 [1, 3]);// cnchar api 调用
+
+  document.getElementById('sortByLetter').addEventListener('click', function () {
+    let text = document.getElementById('textarea').value
+    console.log(text)
+    var newArr = []
+    var arr = text.split('\n')
+    newArr = arr.sort()
+    var newText = newArr.join('\n')
+    document.getElementById('textarea').value = newText
+  })
+  document.getElementById('sortByNumber').addEventListener('click', function () {
+    let text = document.getElementById('textarea').value
+    console.log(text)
+    var newArr = []
+    var arr = text.split('\n')
+    newArr = arr.sort(function (a, b) {
+      return parseFloat(a) - parseFloat(b)
+    })
+    var newText = newArr.join('\n')
+    document.getElementById('textarea').value = newText
+  })
+  // document.getElementById('sortByLetterDesc').addEventListener('click', function () {
+  //   let text = document.getElementById('textarea').value
+  //   console.log(text)
+  //   var newArr = []
+  //   var arr = text.split('\n')
+  //   newArr = arr.sort(function (a, b) {
+  //     return b.localeCompare(a)
+  //   })
+  //   var newText = newArr.join('\n')
+  //   document.getElementById('textarea').value = newText
+  // })
+  document.getElementById('sortByLength').addEventListener('click', function () {
+    let text = document.getElementById('textarea').value
+    console.log(text)
+    var newArr = []
+    var arr = text.split('\n')
+    newArr = arr.sort(function (a, b) {
+      return a.length - b.length
+    })
+    var newText = newArr.join('\n')
+    document.getElementById('textarea').value = newText
+  })
+  // document.getElementById('sortByLengthDesc').addEventListener('click', function () {
+  //   let text = document.getElementById('textarea').value
+  //   console.log(text)
+  //   var newArr = []
+  //   var arr = text.split('\n')
+  //   newArr = arr.sort(function (a, b) {
+  //     return b.length - a.length 
+  //   })
+  //   var newText = newArr.join('\n')
+  //   document.getElementById('textarea').value = newText
+  // })
+  document.getElementById('sortByIp').addEventListener('click', function () {
+    let text = document.getElementById('textarea').value
+    console.log(text)
+    var newArr = []
+    var arr = text.split('\n')
+    newArr = arr.sort(function(a, b) {
+      var ip1 = a.split('.');
+      var ip2 = b.split('.');
+
+      var compa = parseInt(ip1[0], 10) * 256 * 256 * 256 + parseInt(ip1[1], 10) * 256 * 256 + parseInt(ip1[2], 10) * 256 + parseInt(ip1[3], 10);
+      var compb = parseInt(ip2[0], 10) * 256 * 256 * 256 + parseInt(ip2[1], 10) * 256 * 256 + parseInt(ip2[2], 10) * 256 + parseInt(ip2[3], 10);
+
+      return compa - compb;
+    })
+    var newText = newArr.join('\n')
+    document.getElementById('textarea').value = newText
+  })
+  document.getElementById('sortByPinyin').addEventListener('click', function () {
+    let text = document.getElementById('textarea').value
+    console.log(text)
+    var newArr = []
+    var arr = text.split('\n')
+    newArr = arr.sort(function(a, b) {
+      let minLength = Math.min(a.length, b.length)
+      console.log('minLength', minLength)
+      for (let i = 0; i < minLength; i++) {
+        if (a.charAt(i) === b.charAt(i)) {
+          console.log('相同')
+          continue
+        }
+        let letterA = cnchar.spell(a.charAt(i)).charAt(0)
+        let letterB = cnchar.spell(b.charAt(i)).charAt(0)
+        console.log(`${i} 不同 ${letterA}   ${letterB}`)
+        return letterA.localeCompare(letterB)
+      }
+      console.log('外面')
+      return a.length - b.length
+    })
+    var newText = newArr.join('\n')
+    document.getElementById('textarea').value = newText
+  })
+  document.getElementById('sortByStroke').addEventListener('click', function () {
+    let text = document.getElementById('textarea').value
+    console.log(text)
+    var newArr = []
+    var arr = text.split('\n')
+    newArr = arr.sort(function(a, b) {
+      let minLength = Math.min(a.length, b.length)
+      console.log('minLength', minLength)
+      for (let i = 0; i < minLength; i++) {
+        if (a.charAt(i) === b.charAt(i)) {
+          console.log('相同')
+          continue
+        }
+        let strokeA = cnchar.stroke(a, 'order','count')[0]
+        let strokeB = cnchar.stroke(b, 'order','count')[0]
+        // console.log(`${i} 不同 ${letterA}   ${letterB}`)
+        return strokeA - strokeB
+      }
+      console.log('外面')
+      return a.length - b.length
+    })
+    var newText = newArr.join('\n')
+    document.getElementById('textarea').value = newText
+  })
+  document.getElementById('reverse').addEventListener('click', function () {
+    let text = document.getElementById('textarea').value
+    console.log(text)
+    var newArr = []
+    var arr = text.split('\n')
+    newArr = arr.reverse()
+    // newArr = arr.sort(function (a, b) {
+    //   return b.length - a.length 
+    // })
+    var newText = newArr.join('\n')
+    document.getElementById('textarea').value = newText
+  })
+  
+  </script>
+</body>
+</html>

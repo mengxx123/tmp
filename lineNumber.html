@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+            <div id="app" class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">加行号工具</h1>
+                </div>
+                <div class="col-lg-12">
+                    <p>将文字依照指定的方式加上行号。</p>
+                </div>
+                <div class="col-lg-12">
+                    
+                        
+<form name="thisform">
+
+<textarea rows="10" name="content" cols="40" onfocus="this.select();"></textarea>
+<br />
+
+  初始值 <input type="text" name="astart" size="5" value="1">，每次加<input type="text" name="aincrease" size="6" value="1"><br>
+  不足位靠<select size="1" name="adir">
+  <option value="right">右</option>
+  <option value="left">左</option>
+  </select>补<select size="1" name="aadd0">
+  <option value="0">0</option>
+
+  <option value=" ">空白</option>
+  </select>，在编号<br>
+  开头加<input type="text" name="aaddhead" size="20"><br>
+  尾端加<input type="text" name="aaddend" size="20" value=" ">
+  <input type="button" value="加行号" name="B1" onclick="addn()" class="js-ga-gadget-cta"><p>
+
+</form>
+
+                    
+                </div>
+            </div>
+
+            <script>
+    function addn(){var t,n,e,a,u,o,l=document.thisform.content.value,r=parseInt(document.thisform.astart.value),h=parseInt(document.thisform.aincrease.value),d=document.thisform.adir.value,m=document.thisform.aadd0.value,f=document.thisform.aaddhead.value,s=document.thisform.aaddend.value;for(t=0,n=r,e=l.length,u=0;u<e;u++)"\n"==l.charAt(u)&&t++;for(o=e+(a=(""+(r/1+ ++t*h-1)).length),l=f+tofullnum(n,a,m,d)+s+l,n+=h,o+=s.length+f.length,u=0;u<o;u++)"\n"==l.charAt(u)&&(l=l.substring(0,u+1)+f+tofullnum(n,a,m,d)+s+l.substring(u+1),n+=h,o+=s.length+f.length+a);document.thisform.content.value=l}function tofullnum(t,n,e,a){var u,o="";for(nlength=(""+t).length,u=0;u<n-nlength;u++)o+=""+e;return"left"==a?""+t+o:o+t}
+            </script>
+</body>
+</html>

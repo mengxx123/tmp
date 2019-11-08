@@ -46,4 +46,3 @@ const BigNumber = require('bignumber.js')
 let exp = '123456789012345678901234567890'
 let match = exp.match(/^\s+?[\d]+$/)
 console.log('match', match)
-
