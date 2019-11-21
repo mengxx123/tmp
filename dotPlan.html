@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <button id="download">下载</button>
+    <script src="https://cdn.bootcss.com/jquery/3.3.0/jquery.slim.min.js"></script>
+    <script src="https://cdn.bootcss.com/FileSaver.js/2014-11-29/FileSaver.min.js"></script>
+    <script>
+
+      function dot2Line(dot, line) {
+        return Math.abs((line.A * dot.x + line.B * dot.y + line.C) / (Math.sqrt(Math.pow(line.A, 2) + Math.pow(line.B, 2))))
+      }
+
+      function dot2Plane(dot, plane) {
+        return (Math.abs(plane.A * dot.x + plane.B * dot.y + plane.C * dot.z + plane.D)) / (Math.sqrt(Math.pow(plane.A, 2) + Math.pow(plane.B, 2) + Math.pow(plane.C, 2)))
+      }
+
+      // 点到平面的距离 
+      let dot = {
+        x: 4,
+        y: 2,
+        z: 2
+      }
+      let plane = {
+        A: 1,
+        B: 2,
+        C: -2,
+        D: 2
+      }
+      let distance = dot2Plane(dot, plane) 
+      if (distance === 0) {
+        console.log('点在平面上')
+      } else {
+        console.log('点在平面外')
+      }
+      console.log('点到平面的距离', distance)
+
+      // http://www.nicetool.net/app/distance_point_line.html
+      console.log('============')
+      // 点到线的距离
+      let dot2 = {
+        x: 1,
+        y: 2
+      }
+      let line = {
+        A: 3,
+        B: 4,
+        C: 5
+      }
+      let line2 = {
+        A: 6,
+        B: 7,
+        C: 8
+      }
+      let distance2 = dot2Line(dot2, line)
+      
+      if (distance2 === 0) {
+        console.log('点在直线上')
+      } else {
+        console.log('点在直线外')
+        function getChuizu(dot, line) {
+          return {
+            x: (line.B * line.B * dot.x - line.A * line.B * dot.y - line.A * line.C) / (line.A * line.A + line.B * line.B),
+            y: (line.A * line.A * dot.y - line.A * line.B * dot.x - line.B * line.C) / (line.A * line.A + line.B * line.B),
+          }
+  
+        }
+        let chuizuPt = getChuizu(dot2, line)
+        console.log('垂足是', chuizuPt)
+      }
+      console.log('点到线的距离', distance2)
+
+//       设直线方程为ax+by+c=0,点坐标为(m,n)
+// 则垂足为((b*b*m-a*b*n-a*c)/(a*a+b*b),(a*a*n-a*b*m-b*c)/(a*a+b*b))
+
+      function cross(line, line2) {
+        return {
+          x: (line.B * line2.C - line2.B * line.C) / (line2.B * line.A - line.B * line2.A), 
+          y: (line.A * line2.C - line.C * line2.A) / (line.B * line2.A - line.A * line2.B),
+        }
+      }
+
+      if (line2.A / line2.B === line.A / line.B) {
+        console.log('两直线平行')  
+      } else {
+        let crossPt = cross(line, line2)
+        console.log('两直线相交，交点', crossPt)
+      }
+
+      let dot3 = {
+        x: 4,
+        y: 4
+      }
+      let circle = {
+        x: 8,
+        y: 4,
+        r: 4
+      }
+      function dot2Circle(dot, circle) {
+        return Math.sqrt(Math.pow(dot.x - circle.x, 2) + Math.pow(dot.y - circle.y, 2))
+      }
+      let distance3 = dot2Circle(dot3, circle)
+      console.log('点到圆的距离', distance3)
+      if (distance3 === circle.r) {
+        console.log('点在圆上')
+      } else if (distance3 < circle.r) {
+        console.log('点在圆内')
+      } else {
+        console.log('点在圆外')
+      }
+      
+    </script>
+</body>
+</html>
