@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>浮力</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        canvas {
+            border: 1px solid #f00;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    
+<script>
+
+    let canvas = document.getElementById('canvas')
+    let ctx = canvas.getContext('2d')
+
+    let bigCupMaxWaterHeight = 160
+    let bigCupWaterHeight = bigCupMaxWaterHeight
+
+    function drawPt(pt) {
+        ctx.fillStyle = '#000'
+        ctx.beginPath()
+        ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2)
+        ctx.fill()
+    }
+    function drawSmallCup(smallCup) {
+        ctx.beginPath()
+        ctx.moveTo(smallCup.x, smallCup.y)
+        ctx.lineTo(smallCup.x, smallCup.y + smallCup.height)
+        ctx.lineTo(smallCup.x + smallCup.width, smallCup.y + smallCup.height)
+        ctx.lineTo(smallCup.x + smallCup.width, smallCup.y)
+        ctx.stroke()
+    }
+    function drawBigCup(smallCup) {
+        ctx.beginPath()
+        ctx.moveTo(smallCup.x, smallCup.y)
+        ctx.lineTo(smallCup.x, smallCup.y + smallCup.height)
+        ctx.lineTo(smallCup.x + smallCup.width, smallCup.y + smallCup.height)
+        ctx.lineTo(smallCup.x + smallCup.width, smallCup.y + smallCup.height - bigCupMaxWaterHeight)
+        ctx.lineTo(smallCup.x + smallCup.width + 20, smallCup.y + smallCup.height - bigCupMaxWaterHeight)
+        ctx.stroke()
+        ctx.moveTo(smallCup.x + smallCup.width + 20, smallCup.y + smallCup.height - bigCupMaxWaterHeight - 10)
+        ctx.lineTo(smallCup.x + smallCup.width, smallCup.y + smallCup.height - bigCupMaxWaterHeight - 10)
+        ctx.lineTo(smallCup.x + smallCup.width, smallCup.y)
+        ctx.stroke()
+    }
+
+    let ropeLength = 70
+    let objWidth = 40
+    let groundY = 500
+    let testor = {
+            x: 308,
+            y: 100,
+            width: 100,
+            height: 100
+        }
+    let hasOne = false
+    let smallWaterHeight = 0
+    let maxOffset = 0
+    let maxV = 0
+
+
+    function isCross(s1, s2) {
+        function  judgeIntersect(x1,y1,x2,y2,x3,y3,x4,y4){
+
+            //快速排斥：
+            //两个线段为对角线组成的矩形，如果这两个矩形没有重叠的部分，那么两条线段是不可能出现重叠的
+
+            //这里的确如此，这一步是判定两矩形是否相交
+            //1.线段ab的低点低于cd的最高点（可能重合）
+            //2.cd的最左端小于ab的最右端（可能重合）
+            //3.cd的最低点低于ab的最高点（加上条件1，两线段在竖直方向上重合）
+            //4.ab的最左端小于cd的最右端（加上条件2，两直线在水平方向上重合）
+            //综上4个条件，两条线段组成的矩形是重合的
+            //特别要注意一个矩形含于另一个矩形之内的情况
+
+            if(!(Math.min(x1,x2)<=Math.max(x3,x4) && Math.min(y3,y4)<=Math.max(y1,y2)&&Math.min(x3,x4)<=Math.max(x1,x2) && Math.min(y1,y2)<=Math.max(y3,y4)))
+                return false;
+
+            //跨立实验：
+            //如果两条线段相交，那么必须跨立，就是以一条线段为标准，另一条线段的两端点一定在这条线段的两段
+            //也就是说a b两点在线段cd的两端，c d两点在线段ab的两端
+            var u,v,w,z
+            u=(x3-x1)*(y2-y1)-(x2-x1)*(y3-y1);
+            v=(x4-x1)*(y2-y1)-(x2-x1)*(y4-y1);
+            w=(x1-x3)*(y4-y3)-(x4-x3)*(y1-y3);
+            z=(x2-x3)*(y4-y3)-(x4-x3)*(y2-y3);
+            return (u*v<=0.00000001 && w*z<=0.00000001);
+        }
+
+        return judgeIntersect(s1[0].x, s1[0].y, s1[1].x, s1[1].y, s2[0].x, s2[0].y, s2[1].x, s2[1].y)
+    }
+
+    let segment = [
+        {
+            x: 0,
+            y: 0,
+        },
+        {
+            x: 100,
+            y: 100,
+        }
+    ]
+
+    let segment2 = [
+        {
+            x: 0,
+            y: 100,
+        },
+        {
+            x: 100,
+            y: 0,
+        }
+    ]
+
+    console.log('isCross', isCross(segment, segment2))
+    
+    function redraw() {
+
+        ctx.clearRect(0, 0, 800, 800)
+
+        
+        
+
+        ctx.beginPath()
+        ctx.moveTo(segment[0].x, segment[0].y)
+        ctx.lineTo(segment[1].x, segment[1].y)
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.moveTo(segment2[0].x, segment2[0].y)
+        ctx.lineTo(segment2[1].x, segment2[1].y)
+        ctx.stroke()
+    
+
+
+
+        // let ropeEndPt = {
+        //     x: testor.x + testor.width / 2,
+        //     y: testor.y + testor.height + ropeLength,
+        // }
+        // ctx.beginPath()
+        // ctx.rect(testor.x, testor.y, testor.width, testor.height)
+        // ctx.stroke()
+        // // drawPt(ropeStartPt)
+        drawPt({
+            x: 200,
+            y: 200,
+        })
+    }
+
+
+    
+    // ropeLength = 120
+
+    function update() {
+        requestAnimationFrame(update)
+        redraw()
+    }
+    update()
+
+    let isDown = false
+    canvas.addEventListener('mousedown', function (e) {
+        isDown = true
+        console.log(e.pageX)
+        console.log(e.pageY)
+        // let x = e.pageX
+        // let y = e.pageY
+        // startPt2 = {
+        //     x,
+        //     y
+        // }
+        // reDraw()
+    })
+    canvas.addEventListener('mousemove', function (e) {
+        if (!isDown) {
+            return
+        }
+        console.log(e.pageX)
+        console.log(e.pageY)
+        // let x = e.pageX
+        // let y = e.pageY
+        // startPt2 = {
+        //     x,
+        //     y
+        // }
+        // reDraw()
+    })
+    canvas.addEventListener('mouseup', function (e) {
+        isDown = false
+    })
+
+    
+</script>
+</body>
+</html>
