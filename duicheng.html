@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .canvas {
+            border: 1px solid #f00;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        console.log('测试对称')
+
+        let center = {
+            x: 100,
+            y: 0,
+        }
+        let pt = {
+            x: 0,
+            y: 0,
+        }
+        function getDuichengPoint(pt, center) {
+            return  {
+                x: center.x * 2 - pt.x,
+                y: center.y * 2 - pt.y,
+            }
+        }
+        console.log('对称点', getDuichengPoint(pt, center))
+
+        let line = {
+            A: 1,
+            B: -1,
+            C: 0,
+        }
+
+        let pt2 = {
+            x: 200,
+            y: 0,
+        }
+        console.log('')
+
+        function getDuichengPoint2(pt, center) {
+            let chuizu = getChuizu(pt, line)
+            return getDuichengPoint(pt, chuizu)
+        }
+
+        function getChuizu(dot, line) {
+          return {
+            x: (line.B * line.B * dot.x - line.A * line.B * dot.y - line.A * line.C) / (line.A * line.A + line.B * line.B),
+            y: (line.A * line.A * dot.y - line.A * line.B * dot.x - line.B * line.C) / (line.A * line.A + line.B * line.B),
+          }
+  
+        }
+
+        console.log('getChuizu', getChuizu(pt2, line))
+        console.log('对称点', getDuichengPoint2(pt2, line))
+    </script>
+</body>
+
+</html>

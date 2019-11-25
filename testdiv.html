@@ -58,11 +58,25 @@
         if (num > 20) {
             return
         }
+        let lineX = 16
+        let lineY = 60
+        ctx.beginPath()
+        ctx.moveTo(lineX, lineY)
+        ctx.lineTo(lineX + 100, lineY)
+        ctx.stroke()
+
+        ctx.beginPath()
+
+        // let minNum = mu
         ctx.fillStyle = '#888'
         for (let i = 0; i < num; i++) {
-            let x = (i + 1) * 20
-            ctx.arc(x, 30, 6, 0, 2 * Math.PI)
-            ctx.fill()
+            // let x = (i + 1) * 20
+            ctx.beginPath()
+            ctx.moveTo(lineX + i * 32, lineY)
+            ctx.lineTo(lineX + i * 32, lineY - 20)
+            // ctx.arc(x, 30, 6, 0, 2 * Math.PI)
+            // ctx.fill()
+            ctx.stroke()
         }
     }
     drawLine(ctx, 20)
