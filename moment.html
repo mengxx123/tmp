@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <button id="download">moment.js</button>
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
+    <script>
+      console.log('format', moment().format('YYYY-MM-DD HH:mm:ss'))
+
+      // random time
+      // let start = moment('2019-11-26 08:00:00')
+      // let end = moment('2019-11-26 12:00:00')
+      // let startTime = start.toDate().getTime()
+      // let endTime = end.toDate().getTime()
+      // console.log('start', endTime - startTime)
+      // let offsetTime = endTime - startTime
+      // let result = moment(new Date(startTime + offsetTime * Math.random()))
+      // console.log('result', result.format('YYYY-MM-DD HH:mm:ss'))
+
+      
+      function parseTime(text) {
+        let arr = text.split(':').reverse()
+        console.log('arr', arr)
+        return {
+          hour: arr.length === 3 ? parseInt(arr[2]) : 0,
+          minute: arr.length >= 2 ? parseInt(arr[1]) : 0,
+          second: parseInt(arr[0]),
+        }
+      }
+      // console.log('parse', parseTime('12:00'))
+
+      let SECOND = 1000
+      let MINUTE = 60 * SECOND
+      let HOUR = 60 * MINUTE
+
+      function numberToTime(num) {
+        console.log('num', num)
+        console.log('HOUR', HOUR)
+        let totalSecond = num / SECOND
+        console.log('totalSecond', totalSecond)
+
+        let second = totalSecond % 60
+        let hour = Math.floor(num / HOUR)
+        let minute = Math.floor((totalSecond - hour * 3600 - second ) / 60)
+        // let minute = (num - hour * HOUR - second * SECOND) / MINUTE
+        return {
+          hour,
+          minute,
+          second,
+        }
+      }
+
+      function formatTime(time) {
+
+        function fillTwo(num) {
+          return ('' + num).padStart(2, '0')
+        }
+
+        console.log('formatTime')
+
+        return `${time.hour ? (fillTwo(time.hour) + ':') : ''}${fillTwo(time.minute)}:${fillTwo(time.second)}`
+        
+      }
+
+
+      function calTime(text) {
+        let exp
+        console.log('replace', exp = text.replace(/(\d+?:)?(\d+?:)?\d+/g, (a, b, c) => {
+          console.log('a, b, c', a, b, c)
+          let timeObj = parseTime(a)
+          console.log('timeObj', timeObj)
+          return timeObj.hour * HOUR + timeObj.minute * MINUTE + timeObj.second * SECOND
+        }))
+        let result = eval(exp)
+        console.log('result', result)
+        let time = numberToTime(result)
+        console.log('time', time)
+        return formatTime(time)
+      }
+      // console.log('calTime', calTime('1:0:0-1'))
+
+      console.log('calcal')
+
+
+      // console.log('m', m.format('YYYY-MM-DD HH:mm:ss'))
+
+
+    </script>
+</body>
+</html>
