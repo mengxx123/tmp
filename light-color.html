@@ -19,24 +19,31 @@
 
     ctx.globalCompositeOperation = 'lighter'
 
-    ctx.fillStyle = 'rgb(255, 0, 0, 1)'
-    ctx.arc(50, 50, 50, 0, 2 * Math.PI)
-    // ctx.rect(0, 0, 100, 100)
-    ctx.fill()
+    let nodes = [
+        {
+            x: 50,
+            y: 50,
+            color: 'rgb(255, 0, 0, 1)',
+        },
+        {
+            x: 100,
+            y: 50,
+            color: 'rgb(0, 255, 0, 1)',
+        },
+        {
+            x: 80,
+            y: 80,
+            color: 'rgb(0, 0, 255, 1)',
+        },
+    ]
 
-    ctx.fillStyle = 'rgb(0, 255, 0, 1)'
-    ctx.beginPath()
-    ctx.arc(100, 50, 50, 0, 2 * Math.PI)
-    // ctx.rect(50, 50, 100, 100)
-    ctx.fill()
-
-    ctx.fillStyle = 'rgb(0, 0, 255, 1)'
-    ctx.beginPath()
-    ctx.arc(80, 80, 50, 0, 2 * Math.PI)
-    // ctx.rect(30, 0, 100, 100)
-    ctx.fill()
-
-
+    for (let node of nodes) {
+        ctx.fillStyle = node.color
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, 50, 0, 2 * Math.PI)
+        // ctx.rect(50, 50, 100, 100)
+        ctx.fill()
+    }
 </script>
 </body>
 </html>

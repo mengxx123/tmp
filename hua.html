@@ -1,88 +1,141 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>平滑曲线</title>
+    <title>测试拓扑</title>
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
         canvas {
-            border: 1px blue solid; 
+            border: 1px solid #000;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas" width="800" height="500"></canvas>
-    <script type="text/javascript">
-        let isDown = false;
-        let points = [];
-        let beginPoint = null;
-        const canvas = document.querySelector('#canvas');
-        const ctx = canvas.getContext('2d');
+    测试
+    <canvas id="canvas"></canvas>
+    <script>
+        class SimpleDrawBoard {
+            constructor(canvas, options) {
+                console.log('canvas', canvas)
+                // super()
+                let isDown = false;
+                let points = [];
+                let beginPoint = null;
+                
+                let width = options.width || 240
+                let height = options.height || 240
 
-        // 设置线条颜色
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 1;
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
+                canvas.width = width
+                canvas.height = height
+                canvas.style.width = width + 'px'
+                canvas.style.height = height + 'px'
 
-        canvas.addEventListener('mousedown', down, false);
-        canvas.addEventListener('mousemove', move, false);
-        canvas.addEventListener('mouseup', up, false);
-        canvas.addEventListener('mouseout', up, false);
+                const ctx = canvas.getContext('2d')
+                ctx.width = width
+                ctx.height = height
 
-        function down(evt) {
-            isDown = true;
-            const { x, y } = getPos(evt);
-            points.push({x, y});
-            beginPoint = {x, y};
-        }
+                // 设置线条颜色
+                ctx.strokeStyle = 'red'
+                ctx.lineWidth = 1;
+                ctx.lineJoin = 'round'
+                ctx.lineCap = 'round'
 
-        function move(evt) {
-            if (!isDown) return;
+                canvas.addEventListener('mousedown', e => {
+                    _down(getPos(e))
+                }, false)
+                canvas.addEventListener('mousemove', e => {
+                    _move(getPos(e))
+                }, false)
+                canvas.addEventListener('mouseup', () => {
+                    _up()
+                }, false)
+                canvas.addEventListener('mouseout', () => {
+                    _up()
+                }, false)
 
-            const { x, y } = getPos(evt);
-            points.push({x, y});
+                canvas.addEventListener('touchstart', e => {
+                    console.log('e', e.touches[0])
+                    _down(getPos(e.touches[0]))
+                }, false)
+                canvas.addEventListener('touchmove', e => {
+                    _move(getPos(e.touches[0]))
+                }, false)
+                canvas.addEventListener('touchend', e => {
+                    _up()
+                }, false)
 
-            if (points.length > 3) {
-                const lastTwoPoints = points.slice(-2);
-                const controlPoint = lastTwoPoints[0];
-                const endPoint = {
-                    x: (lastTwoPoints[0].x + lastTwoPoints[1].x) / 2,
-                    y: (lastTwoPoints[0].y + lastTwoPoints[1].y) / 2,
+
+                let rect = canvas.getBoundingClientRect()
+
+                function getPos(evt) {
+                    return {
+                        x: evt.pageX - rect.left,
+                        y: evt.pageY - rect.top,
+                    }
                 }
-                drawLine(beginPoint, controlPoint, endPoint);
-                beginPoint = endPoint;
+
+                function _move(pt) {
+                    if (!isDown) return;
+
+                    const { x, y } = pt
+                    points.push({x, y});
+
+                    if (points.length > 3) {
+                        const lastTwoPoints = points.slice(-2);
+                        const controlPoint = lastTwoPoints[0];
+                        const endPoint = {
+                            x: (lastTwoPoints[0].x + lastTwoPoints[1].x) / 2,
+                            y: (lastTwoPoints[0].y + lastTwoPoints[1].y) / 2,
+                        }
+                        drawLine(beginPoint, controlPoint, endPoint);
+                        beginPoint = endPoint;
+                    }
+                }
+
+                function _up() {
+                    if (!isDown) return;
+                    // const { x, y } = getPos(evt);
+                    // points.push({x, y});
+
+                    // if (points.length > 3) {
+                    //     const lastTwoPoints = points.slice(-2);
+                    //     const controlPoint = lastTwoPoints[0];
+                    //     const endPoint = lastTwoPoints[1];
+                    //     drawLine(beginPoint, controlPoint, endPoint);
+                    // }
+                    beginPoint = null;
+                    isDown = false;
+                    points = [];
+                }
+
+                function _down(pt) {
+                    isDown = true
+                    const { x, y } = pt
+                    points.push({x, y})
+                    beginPoint = {x, y}
+                }
+
+                function drawLine(beginPoint, controlPoint, endPoint) {
+                    ctx.beginPath();
+                    ctx.moveTo(beginPoint.x, beginPoint.y);
+                    ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y);
+                    ctx.stroke();
+                    ctx.closePath();
+                }
             }
         }
-
-        function up(evt) {
-            if (!isDown) return;
-            const { x, y } = getPos(evt);
-            points.push({x, y});
-
-            if (points.length > 3) {
-                const lastTwoPoints = points.slice(-2);
-                const controlPoint = lastTwoPoints[0];
-                const endPoint = lastTwoPoints[1];
-                drawLine(beginPoint, controlPoint, endPoint);
-            }
-            beginPoint = null;
-            isDown = false;
-            points = [];
-        }
-
-        function getPos(evt) {
-            return {
-                x: evt.clientX,
-                y: evt.clientY
-            }
-        }
-
-        function drawLine(beginPoint, controlPoint, endPoint) {
-            ctx.beginPath();
-            ctx.moveTo(beginPoint.x, beginPoint.y);
-            ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y);
-            ctx.stroke();
-            ctx.closePath();
-        }
+    </script>
+    <script type="text/javascript">
+        const canvas = document.getElementById('canvas')
+        console.log('rect11', canvas.getBoundingClientRect())
+        // canvas.style.width
+        new SimpleDrawBoard(canvas, {
+            width: 300,
+            height: 300,
+        })
     </script>
 </body>
 </html>

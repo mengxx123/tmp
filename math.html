@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 
+    -->
+
+    https://github.com/mathquill/mathquill
+    <script src="https://cdn.bootcss.com/mathjs/6.2.2/math.min.js"></script>
+    <script src="./mathex.js"></script>
+    <script>
+      function angle2rand(angle) {
+          return angle / 180 * Math.PI
+      }
+      function rad2angle(rad) {
+          return rad / Math.PI * 180
+      }
+      console.log('math test', math.fraction(2, 3))
+      // console.log('_math test', _math.add(2, 3))  // 5 )
+      // console.log('atan2', rad2angle(Math.atan2(-100, 1000)))
+      let pt = {
+        x: 100,
+        y: 100,
+      }
+      function rcs2pcs(pt) {
+        return {
+          // ρ
+          radius: Math.sqrt(Math.pow(pt.x, 2) + Math.pow(pt.y, 2)), // 极径
+          // θ
+          angle: Math.atan(pt.y / pt.x),
+        }
+      }
+
+      function pcs2rcs(pt) {
+        return {
+          x: Math.cos(pt.angle) * pt.radius,
+          y: Math.sin(pt.angle) * pt.radius,
+        }
+      }
+
+      // (ρ,θ)
+      console.log('result', rcs2pcs(pt))
+      console.log('result', pcs2rcs(rcs2pcs(pt)))
+
+
+      // scale
+      // transform
+
+      class Angle {}
+
+      function csConvert(pt, originPt, dAngle = 0) {
+        return 
+      }
+
+      console.log('csConvert', csConvert({ x: 200, y: 100 }, { x: 100, y: 100 }, 45))
+
+    </script>
+</body>
+</html>

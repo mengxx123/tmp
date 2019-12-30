@@ -54,6 +54,8 @@
             return getDuichengPoint(pt, chuizu)
         }
 
+        // Symmetric
+
         function getChuizu(dot, line) {
           return {
             x: (line.B * line.B * dot.x - line.A * line.B * dot.y - line.A * line.C) / (line.A * line.A + line.B * line.B),

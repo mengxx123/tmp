@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+</head>
+
+<body>
+    <script src="./mathex.js"></script>
+    <script>
+        // console.log('123', 123)
+        function random(min, max) {
+            return Math.floor(min + Math.random() * (max - min + 1))
+        }
+
+        function key(min, max) {
+            return Math.floor(min + Math.random() * (max - min + 1))
+        }
+
+
+        // console.log('random', random(0, 9) + 'x')
+        // console.log('random', random(0, 9) + 'x')
+
+        console.log('random', random(0, 9) + 'x')
+        console.log('test', random(0, 9) + 'x')
+
+        function randomCompare() {
+            let num1 = random(0, 9)
+            let num2 = random(20, 9)
+            let answer
+            if (num1 === num2) {
+                answer = '='
+            } else if (num1 < num2) {
+                answer = '<'
+            } else {
+                answer = '>'
+            }
+            return {
+                type: 'select',
+                queston: `${num1} ? ${num2}`,
+                answer,
+                options: [
+                    '=',
+                    '>',
+                    '<',
+                ]
+            }
+        }
+        // console.log('answer', answer)
+        // console.log('random compare', randomCompare())
+
+        function randomNumCompare() {
+            let num = random(1, 9)
+            let num1 = random(1, 9)
+            let num2 = random(1, 9)
+            let answer
+            if (num1 === num2) {
+                answer = '='
+            } else if (num1 < num2) {
+                answer = '<'
+            } else {
+                answer = '>'
+            }
+            return {
+                type: 'select',
+                queston: `${num}^${num1} ? ${num}^${num2}`,
+                answer,
+                options: [
+                    '=',
+                    '>',
+                    '<',
+                ]
+            }
+        }
+        // console.log('answer', answer)
+        // console.log('randomNumCompare', randomNumCompare())
+
+        const mathex = window.mathex
+
+        function xie() {
+            let width = 10 
+            let height = 8
+            let size = 2
+            let topLeftAngle = width / height
+        
+            console.log('l', mathex.gougu(width, height))
+
+            // Math.tan()
+        }
+        console.log('testing', xie())
+
+
+        function calExp(exp) {
+            console.log('exp', exp)
+            let code = `
+function abs(num) {
+    return Math.abs(num)
+}
+
+function sin(num) {
+    return Math.sin(num)
+}
+
+function cos(num) {
+    return Math.cos(num)
+}
+
+function tan(num) {
+    return Math.tan(num)
+}
+
+function ceil(num) {
+    return Math.ceil(num)
+}
+
+function floor(num) {
+    return Math.floor(num)
+}
+
+function round(num) {
+    return Math.round(num)
+}
+
+function log(num) {
+    return Math.log(num)
+}
+
+function pow(num) {
+    return Math.pow(num)
+}
+
+function sqrt(num) {
+    return Math.sqrt(num)
+}
+
+const E = Math.E
+const PI = Math.PI
+${exp}`
+            // console.log('code', code)
+            let ret = eval(code)
+            console.log('ret', ret)
+            return ret
+        }
+        try {
+            console.log('calExp', calExp('1+abs(-3)'))
+        } catch (e) {
+            console.log('错误', e.message)
+        }
+
+        for (let key in Math) {
+            console.log(key)
+        }
+
+    </script>
+</body>
+
+</html>
