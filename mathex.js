@@ -4,8 +4,19 @@ function add(a, b) {
   return a + b
 }
 
-class Number {
+function mod(a, b) {
+  return a % b
+}
 
+class Number {
+  
+  constructor(num) {
+    this._value = num
+  }
+
+  equal(num) {
+    return this._value === num
+  }
 }
 
 // integer
@@ -46,11 +57,17 @@ function equal(a, b) {
   if (a instanceof Fraction) {
     return a.equal(b)
   }
+  if (a instanceof Complex) {
+    return a.equal(b)
+  }
+  if (a instanceof Number) {
+    return a.equal(b)
+  }
   return a === b
 }
 
 function max(...res) {
-  console.log('res', res)
+  // console.log('res', res)
   let max = res[0]
   for (let item of res) {
     if (item > max) {
@@ -61,7 +78,7 @@ function max(...res) {
 }
 
 function min(...res) {
-  console.log('res', res)
+  // console.log('res', res)
   let minNum = res[0]
   for (let item of res) {
     if (item < minNum) {
@@ -77,6 +94,13 @@ function min(...res) {
 //   return Math.min(a, b)
 // }
 
+function pow(a, b) {
+  return Math.pow(a, b)
+}
+
+function sin(num) {
+  return Math.sin(num)
+}
 
 function abs(num) {
   if (typeof num === 'number') {
@@ -106,7 +130,12 @@ class Fraction {
     this._bottom = bottom
   }
 
-  equal
+  equal(num) {
+    if (num instanceof Fraction) {
+      return this._top / this._bottom === num._top / num._bottom  
+    }
+    return this._top / this._bottom === num
+  }
 }
 
 class Complex {
@@ -114,15 +143,27 @@ class Complex {
     this._first = first
     this._last = last
   }
+
+  equal(num) {
+    return this._first === num && this._last === 0
+  }
 }
 
 console.log('Fraction', Fraction)
+
+function calculate(exp) {
+  return exp
+}
+
+function format(exp) {
+  return exp + '1'
+}
 
 function testing() {
   
   function testBoolean(desc, bool) {
     if (bool) {
-      console.log('ok')
+      // console.log('ok')
     } else {
       console.error('not ok', desc)
     }
@@ -142,6 +183,9 @@ function testing() {
 
   testBoolean('equal(1, 2)', equal(2, 2))
   
+  // number
+  testBoolean('number', equal(new Number(2), 2))
+
   // integer
   testBoolean('new Integer(1)', equal(new Integer(2), 2))
   testBoolean('Integer add', equal(new Integer(2).add(2), 4))
@@ -150,7 +194,12 @@ function testing() {
   testBoolean('Integer sub', equal(new Integer(8).sub(4), 4))
 
   // fraction
-  testBoolean('Integer sub', equal(new Fraction(1, 2), 0.5))
+  testBoolean('fraction', equal(new Fraction(1, 2), 0.5))
+  testBoolean('fraction 2', equal(new Fraction(2, 4), 0.5))
+  testBoolean('fraction 3', equal(new Fraction(2, 4), new Fraction(1, 2)))
+
+  // complex
+  testBoolean('complex', equal(new Complex(1, 0), 1))
   
   // abbs
   testEqual('abs(2)', abs(2), 2)
@@ -160,13 +209,20 @@ function testing() {
 
   // max
   testEqual('max', max(1, 2), 2)
-  testEqual('max 多参数', max(1, 2, 3, 5, 4), 5)
+  testEqual('max much params', max(1, 2, 3, 5, 4), 5)
   testEqual('min', min(1, 2), 1)
-  testEqual('min 多参数', min(3, 2, 1, 9), 1)
+  testEqual('min much params', min(3, 2, 1, 9), 1)
 
-  
+  testEqual('pow', pow(2, 3), 8)
+
+  testEqual('sin', sin(45), Math.sin(45))
+
+  testEqual('mod', mod(3, 2), 1)  
+  testEqual('mod', format('1+2'), '1 + 2')  
 
   console.log('')
+
+  
 }
 
 testing()
