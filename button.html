@@ -27,6 +27,7 @@ $(document).ready(function(){
         var wH = box.width() > box.height() ? box.width() : box.height();
         var iX = e.pageX - box.offset().left;
         var iY = e.pageY - box.offset().top;
+        console.log('box.offset()', box.height(), box.offset())
         var nX = iX - wH/2;
         var nY = iY - wH/2;
 
