@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>polar canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        canvas {
+            border: 1px solid #f00;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="200" height="200"></canvas>
+    
+<script>
+
+    let canvas = document.getElementById('canvas')
+    let ctx = canvas.getContext('2d')
+
+
+    function drawPt(pt) {
+        ctx.fillStyle = '#000'
+        ctx.beginPath()
+        ctx.arc(pt.x, pt.y, 1, 0, Math.PI * 2)
+        ctx.fill()
+    }
+
+    let center = {
+        x: 100,
+        y: 100,
+    }
+    function drawMathPt(pt) {
+        let newPt = {
+            x: center.x + pt.x / 2,
+            y: center.y - pt.y / 2,
+        }
+        console.log('newPt', newPt)
+        drawPt(newPt)
+    }
+
+    let origin = {
+        x: 0,
+        y: 0
+    }
+    function redraw() {
+        ctx.beginPath()
+        ctx.moveTo(0, 100)
+        ctx.lineTo(200, 100)
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.moveTo(100, 0)
+        ctx.lineTo(100, 200)
+        ctx.stroke()
+
+        // drawMathPt(origin)
+        // drawMathPt({
+        //     x: 100,
+        //     y: 100
+        // })
+
+        function drawGraph(fn) {
+            let pixelNum = 0
+            let startTime = new Date().getTime()
+
+            let offsetPx = 1
+            for (let x = 0; x < 200; x += offsetPx) {
+                for (let y = 0; y < 200; y += offsetPx) {
+                    let canvasPt = {
+                        x,
+                        y,
+                    }
+                    let mathPt = {
+                        x: (canvasPt.x - center.x) / 2,
+                        y: (canvasPt.y - center.y) / 2 * -1,
+                    }
+                    // y = x
+                    let calY = fn(mathPt.x, mathPt.y)
+                    if (Math.abs(mathPt.y - calY) < 4) {
+                        pixelNum++
+                        drawPt(canvasPt)
+                        console.log('draw mathPt', mathPt)
+                    }
+                }
+            }
+            let time = new Date().getTime() - startTime
+            console.log('pixelNum', pixelNum)
+            console.log('time', time)
+        }
+
+        drawGraph(x => x)
+        drawGraph(x => 2 * x)
+        drawGraph(x => x * x)
+    }
+
+    function update() {
+        // requestAnimationFrame(update)
+        redraw()
+    }
+    update()
+
+    let isDown = false
+    canvas.addEventListener('mousedown', function (e) {
+        isDown = true
+        console.log(e.pageX)
+        console.log(e.pageY)
+        // let x = e.pageX
+        // let y = e.pageY
+        // startPt2 = {
+        //     x,
+        //     y
+        // }
+        reDraw()
+    })
+    canvas.addEventListener('mousemove', function (e) {
+        if (!isDown) {
+            return
+        }
+        console.log(e.pageX)
+        console.log(e.pageY)
+        // let x = e.pageX
+        // let y = e.pageY
+        // startPt2 = {
+        //     x,
+        //     y
+        // }
+        // reDraw()
+    })
+    canvas.addEventListener('mouseup', function (e) {
+        isDown = false
+    })
+
+    
+</script>
+</body>
+</html>
