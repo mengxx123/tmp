@@ -11,19 +11,7 @@
     <script src="https://cdn.bootcss.com/jquery/3.3.0/jquery.slim.min.js"></script>
     <script src="https://cdn.bootcss.com/FileSaver.js/2014-11-29/FileSaver.min.js"></script>
     <script>
-      class Point {
-        constructor() {
-          this.x = 0
-          this.y = 0
-        }
-      }
-
-      class Rect {
-
-      }
-
-      class Segment {}
-
+      
       function getDisatance(dot, dot2) {
         return Math.sqrt(Math.pow(dot.x - dot2.x, 2) + Math.pow(dot.y - dot2.y, 2))
       }
@@ -56,9 +44,6 @@
       // }
       // console.log('点到平面的距离', distance)
 
-      // http://www.nicetool.net/app/distance_point_line.html
-      console.log('============')
-      // 点到线的距离
       let dot2 = {
         x: 1,
         y: 2
@@ -73,64 +58,13 @@
         B: 7,
         C: 8
       }
-      let distance2 = dot2Line(dot2, line)
-      
-      if (distance2 === 0) {
-        console.log('点在直线上')
-      } else {
-        console.log('点在直线外')
-        function getChuizu(dot, line) {
-          return {
-            x: (line.B * line.B * dot.x - line.A * line.B * dot.y - line.A * line.C) / (line.A * line.A + line.B * line.B),
-            y: (line.A * line.A * dot.y - line.A * line.B * dot.x - line.B * line.C) / (line.A * line.A + line.B * line.B),
-          }
-  
-        }
-        let chuizuPt = getChuizu(dot2, line)
-        console.log('垂足是', chuizuPt)
-      }
-      console.log('点到线的距离', distance2)
 
-//       设直线方程为ax+by+c=0,点坐标为(m,n)
-// 则垂足为((b*b*m-a*b*n-a*c)/(a*a+b*b),(a*a*n-a*b*m-b*c)/(a*a+b*b))
-
-      function cross(line, line2) {
-        return {
-          x: (line.B * line2.C - line2.B * line.C) / (line2.B * line.A - line.B * line2.A), 
-          y: (line.A * line2.C - line.C * line2.A) / (line.B * line2.A - line.A * line2.B),
-        }
-      }
-
-      if (line2.A / line2.B === line.A / line.B) {
-        console.log('两直线平行')  
-      } else {
-        let crossPt = cross(line, line2)
-        console.log('两直线相交，交点', crossPt)
-      }
-
-      let dot3 = {
-        x: 4,
-        y: 4
-      }
       let circle = {
         x: 8,
         y: 4,
         r: 4
       }
-      function dot2Circle(dot, circle) {
-        return Math.sqrt(Math.pow(dot.x - circle.x, 2) + Math.pow(dot.y - circle.y, 2))
-      }
-      let distance3 = dot2Circle(dot3, circle)
-      console.log('点到圆的距离', distance3)
-      if (distance3 === circle.r) {
-        console.log('点在圆上')
-      } else if (distance3 < circle.r) {
-        console.log('点在圆内')
-      } else {
-        console.log('点在圆外')
-      }
-
-
+      
       let dot4 = {
         x: 300,
         y: 300,
@@ -145,50 +79,6 @@
             y: 100,
         }
       ]
-      
-      function dotAndSegment(dot, segment) {
-        if (segment[0].x === segment[1].x) {
-          if (dot.x !== segment[0].x) {
-            return '点不在线段上'
-          }
-          let min = Math.min(segment[0].y, segment[1].y)
-          let max = Math.max(segment[0].y, segment[1].y)
-          if (dot.y >= min && dot.y <= max) {
-            return '点在线段上'    
-          } else {
-            return '点不在线段上'
-          }
-        }
-        if (segment[0].y === segment[1].y) {
-          if (dot.y !== segment[0].y) {
-            return '点不在线段上'
-          }
-          let min = Math.min(segment[0].x, segment[1].x)
-          let max = Math.max(segment[0].x, segment[1].x)
-          if (dot.x >= min && dot.x <= max) {
-            return '点在线段上'    
-          } else {
-            return '点不在线段上'
-          }
-        }
-        function xielv(dot, dot2) {
-          return Math.abs((dot2.y - dot.y) / (dot2.x - dot.x))
-        }
-        if (xielv(segment[1], dot) === xielv(dot, segment[0])) {
-          let minX = Math.min(segment[0].x, segment[1].x)
-          let maxX = Math.min(segment[0].x, segment[1].x)
-          if (dot.x < minX || dot.x > maxX) {
-            return '点在线段上'
-          } else {
-            return '点不在线段上'
-          }
-          // return '点可能在线段上' // TODO
-        } else {
-          return '点不在线段上'
-        }
-      }
-      console.log('点与线段的关系：', dotAndSegment(dot4, segment))
-      console.log('线段长度', getDisatance(segment[0], segment[1]))
 
       let dot5 = {
         x: 100,
@@ -214,13 +104,6 @@
           y: 100
         },
       ]
-      console.log('三角形的周长：', getDisatance(triangle[0], triangle[1]) + getDisatance(triangle[1], triangle[2]) + getDisatance(triangle[0], triangle[2]))
-      // 当三个点A、B、C的坐标分别为A(x1，y1)、B(x2，y2)、C(x3、y3)时，三角形面积为，
-
-// S=。
-      let area = (triangle[0].x * triangle[1].y - triangle[0].x * triangle[2].y + triangle[1].x + triangle[2].y 
-        - triangle[1].x + triangle[0].y + triangle[2].x * triangle[0].y - triangle[1].x * triangle[1].y) 
-      console.log('三角形的面积：' + area)
 
       //计算一个点是否在多边形里,参数:点,多边形数组
       function _PointInPoly(pt, poly) { 
@@ -307,12 +190,7 @@
       console.log('线段与圆的关系:' + circleAndSegment(circle6, segment6))
 
 
-      console.log('点到两点的距离')
-      // 直线方程的公式:一般式: ax +by + c = 0 其中
-      // a = y2 - y1,
-      // b = x1 - x2,
-      // c = x2 * y1 - x1 * y2;
-      // 只要知道两点坐标，代入公式，就可以求出直线的方程。
+     
       // 已知一个点P(X0, Y0), 求点到直线Ax + By + C = 0的距离公式为：
       // d = [AX0 + BY0 + C的绝对值]/[(A^2 + B^2)的算术平方根]
       // 例如:
@@ -347,33 +225,6 @@
       // let distance99 = dot2Line(dot88, createLIneBy2Dot(dot91, dot92))
       // console.log('点到直线的距离', distance99)
 
-      console.log('线段的中点：XXX')
-
-      let circle1001 = {
-        center: {
-          x: 100,
-          y: 100,
-        },
-        radius: 100
-      }
-      let circle1002 = {
-        center: {
-          x: 300,
-          y: 100,
-        },
-        radius: 100
-      }
-      let circleDistance = getDisatance(circle1001.center, circle1002.center)
-      console.log('距离', circleDistance)
-      if (circleDistance === circle1001.radius + circle1002.radius) {
-        console.log('两圆关系：两圆相切')
-      } else if (circleDistance < circle1001.radius + circle1002.radius) {
-        console.log('两圆关系：两圆相交')
-      } else {
-        console.log('两圆关系：两圆相离')
-      }
-
-      
 
     </script>
 </body>

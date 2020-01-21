@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+    canvas {
+        border: 1px solid #f00;
+    }
+    </style>
+</head>
+<body>
+<script>
+    function random(min, max) {
+        return Math.floor(min + Math.random() * (max - min + 1))
+    }
+
+    function randomNotIn(min, max, arr) {
+        return Math.floor(min + Math.random() * (max - min + 1))
+    }
+
+
+
+    function getOne() {
+        let num1 = random(1, 9)
+        let num2 = 10 - num1
+        let num3 = random(1, 9)
+        return {
+            question: `${num1} + ${num3} + ${num2} =`
+        }
+    }
+    console.log('简便', getOne())
+
+
+    
+</script>
+</body>
+</html>
