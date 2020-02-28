@@ -25,13 +25,14 @@
         width: 40px;
         height: 8px;
         background: #000;
+        transition: all .3s;
     }
     </style>
 </head>
 
 <body>
     <div class="">
-        疫情隔离防控数据（<span class="time" id="time"></span>）
+        数据动态排行（<span class="time" id="time"></span>）
 
         <br>
         <div class="progress">
@@ -90,6 +91,29 @@
         cxt.stroke();
         cxt.restore();
     }
+
+    function orderList(list) {
+        list = list.sort((a, b) => {
+            function getTypeValue(type) {
+                if (!type) {
+                    return 0
+                }
+                let map = {
+                    in: 0,
+                    out: -1
+                }
+                return map[type]
+            }
+            if (a.type !== b.type && (a.type === 'out' || b.type === 'out')) {
+                return getTypeValue(b.type) - getTypeValue(a.type)
+            }
+            return b.number - a.number
+        })
+        for (let i = 0; i < list.length; i++) {
+            list[i].index = i
+        }
+        return list
+    }
  
     function drawRoundRectPath(cxt, width, height, radius) {
         cxt.beginPath(0);
@@ -131,51 +155,70 @@
 
         let textWidth = 80 // TODO
 
+        let maxLength = 3
+
         const moment = window.moment
 
-        let allData = [
-            {
-                name: '天河区',
-                number: 1000,
-                time: '2020-01-01',
-                index: 0,
-            },
-            {
-                name: '海珠区',
-                number: 500,
-                time: '2020-01-01',
-                index: 1,
-            },
-            {
-                name: '白云区',
-                number: 400,
-                time: '2020-01-01',
-                index: 2,
-            },
-            {
-                name: '天河区',
-                number: 1000,
-                time: '2020-01-02',
-                index: 0,
-            },
-            {
-                name: '海珠区',
-                number: 400,
-                time: '2020-01-02',
-                index: 2,
-            },
-            {
-                name: '白云区',
-                number: 800,
-                time: '2020-01-02',
-                index: 1,
-            },
-        ]
+        function parseTableData(text) {
+            return text.split('\n').filter(item => item).map(item => {
+                let arr = item.split(',')
+                return {
+                    name: arr[0],
+                    number: parseInt(arr[1]),
+                    time: arr[2],
+                }
+            })
+        }
+
+        let tableText = `天河区,1000,2020-01-01
+海珠区,500,2020-01-01
+白云区,400,2020-01-01
+
+天河区,1000,2020-01-02
+海珠区,400,2020-01-02
+白云区,800,2020-01-02
+
+天河区,1600,2020-01-03
+海珠区,600,2020-01-03
+白云区,1000,2020-01-03
+
+天河区,2000,2020-01-04
+海珠区,700,2020-01-04
+白云区,1100,2020-01-04
+番禺区,100,2020-01-04
+
+`
+//         tableText = `天河区,1000,2020-01-01
+// 海珠区,500,2020-01-01
+// 白云区,400,2020-01-01
+// 番禺区,300,2020-01-01
+
+
+
+// 海珠区,1000,2020-01-02
+// 白云区,400,2020-01-02
+// 番禺区,500,2020-01-02
+// 天河区,1200,2020-01-02
+// `
+// tableText = `天河区,1000,2020-01-01
+// 海珠区,500,2020-01-01
+// 番禺区,300,2020-01-01
+
+// 天河区,1200,2020-01-02
+// 海珠区,1000,2020-01-02
+// 白云区,400,2020-01-02
+
+// 天河区,1000,2020-01-03
+// 海珠区,500,2020-01-03
+// 番禺区,300,2020-01-03
+// `
+
+        let allData = parseTableData(tableText)
 
         let minMoment = moment(allData[0].time)
         let maxMoment = moment(allData[0].time)
         
-        let colors = ['#bdbd29', '#d52726', '#fe7f0a']
+        let colors = ['#bdbd29', '#d52726', '#fe7f0a', '#8c564a', '#11bece']
         let colorIndex = 0
         let usedColors = []
         let colorMap = {}
@@ -206,6 +249,7 @@
 
 
         function reDraw() {
+            console.log('redrae chartData', chartData)
 
             ctx.clearRect(0, 0, canvasHeight, canvasHeight)
             ctx.strokeStyle = 'rgba(57, 88, 228, 1)'
@@ -220,18 +264,18 @@
                 // }
                 return Math.PI * 2 * progress
             }
-            let progress = 0.8
-            ctx.beginPath()
-            ctx.arc(100, 100, 50, getAngle(0), getAngle(progress), false)
-            ctx.arc(100, 100, 40, getAngle(progress), getAngle(0), true)
-            ctx.closePath()
-            ctx.stroke()
-            ctx.fill()
+            // let progress = 0.8
+            // ctx.beginPath()
+            // ctx.arc(100, 100, 50, getAngle(0), getAngle(progress), false)
+            // ctx.arc(100, 100, 40, getAngle(progress), getAngle(0), true)
+            // ctx.closePath()
+            // ctx.stroke()
+            // ctx.fill()
 
             
             
             let maxNumber = 0
-            let maxWidth = 500
+            let maxWidth = 400
             for (let i = 0 ; i < chartData.length; i++) {
                 let item = chartData[i]
                 if (item.number > maxNumber) {
@@ -240,31 +284,35 @@
             }
             for (let i = 0 ; i < chartData.length; i++) {
                 let item = chartData[i]
+                if (item.index > 3) {
+                    continue
+                }
+                ctx.globalAlpha = item.opacity
                 // console.log('item', item)
-
+                // 圆角矩形
                 ctx.fillStyle = item.color
                 ctx.beginPath()
                 let x = paddingLeft + textWidth
-                let y = paddingTop + item.index * (24 + 16)
-                let width = item.number / maxNumber * maxWidth
-                // console.log('width', width)
+                let y = item.displayY
+                let width = item.displayWidth
                 let height = 24
                 fillRoundRect(ctx, x, y, width, height, 4, item.color)
-                // ctx.rect(x, y, width, height)
-                // ctx.fill()
-
+                // 数字
                 ctx.beginPath()
-                // ctx.textAlign = 'center'
                 ctx.textBaseline = 'middle'
                 ctx.font = '16px Arial'
-                ctx.fillStyle = '#333'
-                ctx.fillText(item.name, paddingLeft, y + 24 / 2)
+                ctx.fillText('' + item.number, x + width + 16, y + height / 2)
+                // 名称
+                ctx.beginPath()
+                ctx.textBaseline = 'middle'
+                ctx.font = '16px Arial'
+                ctx.fillText(item.name, paddingLeft, y + height / 2)
             }
         }
 
         let totalTime = 0
         let startTime
-        let intervalTime = 2 * 1000
+        let intervalTime = 1 * 1000
         let $time = document.getElementById('time')
         let $progress = document.getElementById('progress')
 
@@ -277,15 +325,108 @@
             console.log('curDateIndex', curDateIndex)
             if (curDateIndex > offsetNum - 1) {
                 clearInterval(timer)
+                let progress = 1
+                $progress.style = `width: ${progress * 100}%;`
                 return
             }
+            // 新的一天的数据
+            let newChartData = allData.filter(item => item.time === moment(minDate).add(curDateIndex, 'days').format('YYYY-MM-DD'))
+            newChartData = orderList(newChartData)
+            // 上一天的数据
+            let oldChartData = allData.filter(item => item.time === moment(minDate).add(curDateIndex - 1, 'days').format('YYYY-MM-DD'))
+            oldChartData = orderList(oldChartData)
+
             let curDate = moment(minDate).add(curDateIndex, 'days')
             chartData = allData.filter(item => item.time === curDate.format('YYYY-MM-DD'))
+            
+            chartData = chartData.map(item => {
+                item.type = ''
+                return item
+            })
+            // in
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                let targetIndex = oldChartData.findIndex(_item => _item.name === item.name)
+                if (targetIndex === -1) {
+                    item.type = 'in'
+                }
+            }
+            // out
+            for (let i = 0 ; i < oldChartData.length; i++) {
+                let item = oldChartData[i]
+                let targetIndex = chartData.findIndex(_item => _item.name === item.name)
+                if (targetIndex === -1) {
+                    chartData.push({
+                        ...oldChartData[i],
+                        type: 'out'
+                    })
+                }
+            }
+            chartData = orderList(chartData)
+            
+            // 找出
             $time.innerHTML = curDate.format('YYYY-MM-DD')
-            let progress = toa / offsetNum
+            let progress = totalTime / (offsetNum * (intervalTime))
             $progress.style = `width: ${progress * 100}%;`
+            let curDayProgress = (totalTime - curDateIndex * intervalTime) / intervalTime
+            
+           
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                let lastItem = oldChartData.find(_item => _item.name === item.name)
+                // x
+                let x = paddingLeft + textWidth
+                // y
+                let y = paddingTop + item.index * (24 + 16)
+                let lastY = y
+                if (lastItem) {
+                    lastY = paddingTop + lastItem.index * (24 + 16)
+                }
+                if (item.type === 'out') {
+                    y = paddingTop + maxLength * (24 + 16)
+                } else if (item.type === 'in' && curDateIndex !== 0) {
+                    lastY = paddingTop + maxLength * (24 + 16)
+                } 
+                let displayY = lastY + (y - lastY) * curDayProgress
+                item.displayY = displayY
+                
+
+                // opacity
+                item.opacity = 1
+                if (item.type === 'out') {
+                    item.opacity = 1 - curDayProgress
+                } else if (item.type === 'in') {
+                    item.opacity = curDayProgress
+                }
+
+                // width
+                let lastNum = 0
+                if (lastItem) {
+                    lastNum = lastItem.number
+                }
+                // let width = item.number / maxNumber * maxWidth
+                // item.width = width
+                // let displayWidth = (lastNum + (item.number - lastNum) * curDayProgress) / maxNumber * maxWidth
+                // item.displayWidth = displayWidth
+                // number
+                let displayNumber = lastNum + (item.number - lastNum) * curDayProgress
+                item.displayNumber = displayNumber
+            }
+            let maxNumber = 0
+            let maxWidth = 400
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                if (item.displayNumber > maxNumber) {
+                    maxNumber = item.displayNumber
+                }
+            }
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+               
+                item.displayWidth = item.displayNumber / maxNumber * maxWidth
+            }
             reDraw()
-        }, 200)
+        }, 1000 / 24)
     </script>
 </body>
 
