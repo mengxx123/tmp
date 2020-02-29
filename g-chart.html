@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>动态 Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    .canvas {
+        border: 1px solid #000;
+    }
+    .progress {
+        width: 480px;
+        height: 8px;
+        background: #999;
+    }
+    .progressBar {
+        width: 40px;
+        height: 8px;
+        background: #000;
+        transition: all .3s;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="">
+        数据动态排行（<span class="time" id="time"></span>）
+
+        <br>
+        <div class="progress">
+            <div class="progressBar" id="progress"></div>
+        </div>
+        <canvas class="canvas" id="canvas" width="640" height="640" style="width: 640px; height: 640px;" >
+            
+        </canvas>
+    </div>
+
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
+    <script>
+        /**该方法用来绘制一个有填充色的圆角矩形 
+     *@param cxt:canvas的上下文环境 
+     *@param x:左上角x轴坐标 
+     *@param y:左上角y轴坐标 
+     *@param width:矩形的宽度 
+     *@param height:矩形的高度 
+     *@param radius:圆的半径 
+     *@param fillColor:填充颜色 
+     **/
+    function fillRoundRect(cxt, x, y, width, height, radius, /*optional*/ fillColor) {
+        //圆的直径必然要小于矩形的宽高          
+        if (2 * radius > width || 2 * radius > height) { return false; }
+ 
+        cxt.save();
+        cxt.translate(x, y);
+        //绘制圆角矩形的各个边  
+        drawRoundRectPath(cxt, width, height, radius);
+        cxt.fillStyle = fillColor || "#000"; //若是给定了值就用给定的值否则给予默认值  
+        cxt.fill();
+        cxt.restore();
+    }
+ 
+ 
+    /**该方法用来绘制圆角矩形 
+     *@param cxt:canvas的上下文环境 
+     *@param x:左上角x轴坐标 
+     *@param y:左上角y轴坐标 
+     *@param width:矩形的宽度 
+     *@param height:矩形的高度 
+     *@param radius:圆的半径 
+     *@param lineWidth:线条粗细 
+     *@param strokeColor:线条颜色 
+     **/
+    function strokeRoundRect(cxt, x, y, width, height, radius, /*optional*/ lineWidth, /*optional*/ strokeColor) {
+        //圆的直径必然要小于矩形的宽高          
+        if (2 * radius > width || 2 * radius > height) { return false; }
+ 
+        cxt.save();
+        cxt.translate(x, y);
+        //绘制圆角矩形的各个边  
+        drawRoundRectPath(cxt, width, height, radius);
+        cxt.lineWidth = lineWidth || 2; //若是给定了值就用给定的值否则给予默认值2  
+        cxt.strokeStyle = strokeColor || "#000";
+        cxt.stroke();
+        cxt.restore();
+    }
+
+    function orderList(list) {
+        list = list.sort((a, b) => {
+            function getTypeValue(type) {
+                if (!type) {
+                    return 0
+                }
+                let map = {
+                    in: 0,
+                    out: -1
+                }
+                return map[type]
+            }
+            if (a.type !== b.type && (a.type === 'out' || b.type === 'out')) {
+                return getTypeValue(b.type) - getTypeValue(a.type)
+            }
+            return b.number - a.number
+        })
+        for (let i = 0; i < list.length; i++) {
+            list[i].index = i
+        }
+        return list
+    }
+ 
+    function drawRoundRectPath(cxt, width, height, radius) {
+        cxt.beginPath(0);
+        //从右下角顺时针绘制，弧度从0到1/2PI  
+        cxt.arc(width - radius, height - radius, radius, 0, Math.PI / 2);
+ 
+        //矩形下边线  
+        cxt.lineTo(radius, height);
+ 
+        //左下角圆弧，弧度从1/2PI到PI  
+        cxt.arc(radius, height - radius, radius, Math.PI / 2, Math.PI);
+ 
+        //矩形左边线  
+        cxt.lineTo(0, radius);
+ 
+        //左上角圆弧，弧度从PI到3/2PI  
+        cxt.arc(radius, radius, radius, Math.PI, Math.PI * 3 / 2);
+ 
+        //上边线  
+        cxt.lineTo(width - radius, 0);
+ 
+        //右上角圆弧  
+        cxt.arc(width - radius, radius, radius, Math.PI * 3 / 2, Math.PI * 2);
+ 
+        //右边线  
+        cxt.lineTo(width, height - radius);
+        cxt.closePath();
+    }
+
+        let canvas = document.getElementById('canvas')
+        let rect = canvas.getBoundingClientRect()
+        let ctx = canvas.getContext('2d')
+
+        let canvasWidth = 640
+        let canvasHeight = 640
+        let GRID_SIZE = 64
+        let paddingTop = 14
+        let paddingLeft = 14
+
+        let textWidth = 80 // TODO
+
+        let maxLength = 3
+
+        const moment = window.moment
+
+        function parseTableData(text) {
+            return text.split('\n').filter(item => item).map(item => {
+                let arr = item.split(',')
+                return {
+                    name: arr[0],
+                    number: parseInt(arr[1]),
+                    time: arr[2],
+                }
+            })
+        }
+
+        let tableText = `天河区,1000,2020-01-01
+海珠区,500,2020-01-01
+白云区,400,2020-01-01
+
+天河区,1000,2020-01-02
+海珠区,400,2020-01-02
+白云区,800,2020-01-02
+
+天河区,1600,2020-01-03
+海珠区,600,2020-01-03
+白云区,1000,2020-01-03
+
+天河区,2000,2020-01-04
+海珠区,700,2020-01-04
+白云区,1100,2020-01-04
+番禺区,100,2020-01-04
+
+`
+//         tableText = `天河区,1000,2020-01-01
+// 海珠区,500,2020-01-01
+// 白云区,400,2020-01-01
+// 番禺区,300,2020-01-01
+
+
+
+// 海珠区,1000,2020-01-02
+// 白云区,400,2020-01-02
+// 番禺区,500,2020-01-02
+// 天河区,1200,2020-01-02
+// `
+// tableText = `天河区,1000,2020-01-01
+// 海珠区,500,2020-01-01
+// 番禺区,300,2020-01-01
+
+// 天河区,1200,2020-01-02
+// 海珠区,1000,2020-01-02
+// 白云区,400,2020-01-02
+
+// 天河区,1000,2020-01-03
+// 海珠区,500,2020-01-03
+// 番禺区,300,2020-01-03
+// `
+
+        let allData = parseTableData(tableText)
+
+        let minMoment = moment(allData[0].time)
+        let maxMoment = moment(allData[0].time)
+        
+        let colors = ['#bdbd29', '#d52726', '#fe7f0a', '#8c564a', '#11bece']
+        let colorIndex = 0
+        let usedColors = []
+        let colorMap = {}
+        for (let item of allData) {
+            if (!colorMap[item.name]) {
+                colorMap[item.name] = colors[colorIndex % colors.length]
+                colorIndex++
+            }
+            item.color = colorMap[item.name]
+        }
+
+        for (let item of allData) {
+            if (moment(item.time).isBefore(minMoment)) {
+                minMoment = moment(item.time)
+            }
+            if (moment(item.time).isAfter(maxMoment)) {
+                maxMoment = moment(item.time)
+            }
+        }
+        let minDate = minMoment.format('YYYY-MM-DD HH:mm:ss')
+        let offsetNum = (maxMoment.startOf('day').toDate().getTime() - minMoment.startOf('day').toDate().getTime()) / (24 * 3600 *1000) + 1
+        console.log('offsetNum', offsetNum)
+
+        console.log('min', minMoment.format('YYYY-MM-DD HH:mm:ss'))
+        console.log('max', maxMoment.format('YYYY-MM-DD HH:mm:ss'))
+
+        let chartData = allData.filter(item => item.time === '2020-01-01') // TODO
+
+
+        function reDraw() {
+            console.log('redrae chartData', chartData)
+
+            ctx.clearRect(0, 0, canvasHeight, canvasHeight)
+            ctx.strokeStyle = 'rgba(57, 88, 228, 1)'
+            ctx.fillStyle = 'rgba(57, 88, 228, 1)'
+            
+            function getAngle(progress) {
+                progress = (progress + 1 - 0.25) % 1
+                // if (progress < 0.25) {
+                //     progress = 0.75 + progress
+                // } else {
+                //     progress
+                // }
+                return Math.PI * 2 * progress
+            }
+            // let progress = 0.8
+            // ctx.beginPath()
+            // ctx.arc(100, 100, 50, getAngle(0), getAngle(progress), false)
+            // ctx.arc(100, 100, 40, getAngle(progress), getAngle(0), true)
+            // ctx.closePath()
+            // ctx.stroke()
+            // ctx.fill()
+
+            
+            
+            let maxNumber = 0
+            let maxWidth = 400
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                if (item.number > maxNumber) {
+                    maxNumber = item.number
+                }
+            }
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                if (item.index > 3) {
+                    continue
+                }
+                ctx.globalAlpha = item.opacity
+                // console.log('item', item)
+                // 圆角矩形
+                ctx.fillStyle = item.color
+                ctx.beginPath()
+                let x = paddingLeft + textWidth
+                let y = item.displayY
+                let width = item.displayWidth
+                let height = 24
+                fillRoundRect(ctx, x, y, width, height, 4, item.color)
+                // 数字
+                ctx.beginPath()
+                ctx.textBaseline = 'middle'
+                ctx.font = '16px Arial'
+                ctx.fillText('' + item.number, x + width + 16, y + height / 2)
+                // 名称
+                ctx.beginPath()
+                ctx.textBaseline = 'middle'
+                ctx.font = '16px Arial'
+                ctx.fillText(item.name, paddingLeft, y + height / 2)
+            }
+        }
+
+        let totalTime = 0
+        let startTime
+        let intervalTime = 1 * 1000
+        let $time = document.getElementById('time')
+        let $progress = document.getElementById('progress')
+
+        let timer = setInterval(() => {
+            if (!startTime) {
+                startTime = new Date().getTime()
+            }
+            totalTime = new Date().getTime() - startTime
+            let curDateIndex = Math.floor(totalTime / intervalTime)
+            console.log('curDateIndex', curDateIndex)
+            if (curDateIndex > offsetNum - 1) {
+                clearInterval(timer)
+                let progress = 1
+                $progress.style = `width: ${progress * 100}%;`
+                return
+            }
+            // 新的一天的数据
+            let newChartData = allData.filter(item => item.time === moment(minDate).add(curDateIndex, 'days').format('YYYY-MM-DD'))
+            newChartData = orderList(newChartData)
+            // 上一天的数据
+            let oldChartData = allData.filter(item => item.time === moment(minDate).add(curDateIndex - 1, 'days').format('YYYY-MM-DD'))
+            oldChartData = orderList(oldChartData)
+
+            let curDate = moment(minDate).add(curDateIndex, 'days')
+            chartData = allData.filter(item => item.time === curDate.format('YYYY-MM-DD'))
+            
+            chartData = chartData.map(item => {
+                item.type = ''
+                return item
+            })
+            // in
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                let targetIndex = oldChartData.findIndex(_item => _item.name === item.name)
+                if (targetIndex === -1) {
+                    item.type = 'in'
+                }
+            }
+            // out
+            for (let i = 0 ; i < oldChartData.length; i++) {
+                let item = oldChartData[i]
+                let targetIndex = chartData.findIndex(_item => _item.name === item.name)
+                if (targetIndex === -1) {
+                    chartData.push({
+                        ...oldChartData[i],
+                        type: 'out'
+                    })
+                }
+            }
+            chartData = orderList(chartData)
+            
+            // 找出
+            $time.innerHTML = curDate.format('YYYY-MM-DD')
+            let progress = totalTime / (offsetNum * (intervalTime))
+            $progress.style = `width: ${progress * 100}%;`
+            let curDayProgress = (totalTime - curDateIndex * intervalTime) / intervalTime
+            
+           
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                let lastItem = oldChartData.find(_item => _item.name === item.name)
+                // x
+                let x = paddingLeft + textWidth
+                // y
+                let y = paddingTop + item.index * (24 + 16)
+                let lastY = y
+                if (lastItem) {
+                    lastY = paddingTop + lastItem.index * (24 + 16)
+                }
+                if (item.type === 'out') {
+                    y = paddingTop + maxLength * (24 + 16)
+                } else if (item.type === 'in' && curDateIndex !== 0) {
+                    lastY = paddingTop + maxLength * (24 + 16)
+                } 
+                let displayY = lastY + (y - lastY) * curDayProgress
+                item.displayY = displayY
+                
+
+                // opacity
+                item.opacity = 1
+                if (item.type === 'out') {
+                    item.opacity = 1 - curDayProgress
+                } else if (item.type === 'in') {
+                    item.opacity = curDayProgress
+                }
+
+                // width
+                let lastNum = 0
+                if (lastItem) {
+                    lastNum = lastItem.number
+                }
+                // let width = item.number / maxNumber * maxWidth
+                // item.width = width
+                // let displayWidth = (lastNum + (item.number - lastNum) * curDayProgress) / maxNumber * maxWidth
+                // item.displayWidth = displayWidth
+                // number
+                let displayNumber = lastNum + (item.number - lastNum) * curDayProgress
+                item.displayNumber = displayNumber
+            }
+            let maxNumber = 0
+            let maxWidth = 400
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+                if (item.displayNumber > maxNumber) {
+                    maxNumber = item.displayNumber
+                }
+            }
+            for (let i = 0 ; i < chartData.length; i++) {
+                let item = chartData[i]
+               
+                item.displayWidth = item.displayNumber / maxNumber * maxWidth
+            }
+            reDraw()
+        }, 1000 / 24)
+    </script>
+</body>
+
+</html>

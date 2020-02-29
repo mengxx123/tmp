@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>动态 Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="">
+        疫情隔离防控数据（<span class="time" id="time"></span>）
+
+        <br>
+        <canvas class="canvas" id="canvas" width="640" height="640" style="width: 640px; height: 640px;" >
+            
+        </canvas>
+    </div>
+
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
+    <script>
+        
+        function orderList(list) {
+            list = list.sort((a, b) => {
+                function getTypeValue(type) {
+                    if (!type) {
+                        return 0
+                    }
+                    let map = {
+                        in: 0,
+                        out: -1
+                    }
+                    return map[type]
+                }
+                if (a.type !== b.type && (a.type === 'out' || b.type === 'out')) {
+                    return getTypeValue(b.type) - getTypeValue(a.type)
+                }
+                return b.number - a.number
+            })
+            for (let i = 0; i < list.length; i++) {
+                list[i].index = i
+            }
+            return list
+        }
+
+        const moment = window.moment
+
+        let allData = [
+            {
+                name: '天河区',
+                number: 1000,
+                color: '#bdbd29',
+                time: '2020-01-01',
+            },
+            {
+                name: '海珠区',
+                number: 500,
+                color: '#d52726',
+                time: '2020-01-01',
+                type: 'out'
+            },
+            {
+                name: '白云区',
+                number: 400,
+                color: '#fe7f0a',
+                time: '2020-01-01',
+            },
+        ]
+
+        allData = orderList(allData)
+        console.log('orderList', allData)
+
+        let maxNumber = 800
+        let maxWidth = 500
+
+        function ceil2(num) {
+            let text = '' + num
+            if (text.length === 1) {
+                return Math.ceil(num / 2) * 2
+            }
+        }
+
+        function testingCeil(num) {
+            console.log('ceil2', num, ceil2(num))
+        }
+
+        testingCeil(1)
+        testingCeil(2)
+        testingCeil(13)
+        testingCeil(7001)
+
+
+        function dealNum(num) {
+            console.log('num', num)
+            let text = '' + num
+            if (text.length === 1) {
+                return {
+                    max: Math.ceil(num / 2) * 2
+                }
+            } else {
+                let front1 = parseInt(text.substring(0, 1))
+                let front2 = parseInt(text.substring(0, 2))
+                console.log('front1', front1)
+                console.log('front2', front2)
+                if (front2 / 2 > 10) {
+                    return {
+                        max: Math.ceil(Math.ceil(num / Math.pow(10, text.length - 1)) / 2) * 2
+                    }
+                } else {
+                    return {
+                        max: (Math.ceil(Math.ceil(num / Math.pow(10, text.length - 2)) / 2) * 2) / 2
+                    }
+                }
+
+            }
+        }
+
+        console.log('dealNum', dealNum(1800))
+
+        
+    </script>
+</body>
+
+</html>
