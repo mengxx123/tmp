@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>topo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            border: 1px solid #f00;
+        }
+    </style>
+</head>
+<body>
+       
+<canvas id="canvas" width="800" height="800"></canvas>
+<img src="light.png">
+<script src="./canvasx.js"></script>
+
+<script>
+    // let Canvasx = window.Canvasx
+    
+    class CircleNode {
+
+        constructor(x, y) {
+            this.type = 'circle'
+            this.radius = 50
+            this._width = this.radius * 2
+            this._height = this.radius * 2
+            this._x = x - this._width / 2 
+            this._y = y - this._height / 2
+        }
+
+        draw(ctx) {
+            console.log('node draw')
+            ctx.fillStyle = this.color || '#f00'
+            ctx.beginPath()
+            let x = this._x + this._width / 2 
+            let y = this._y + this._height / 2
+            ctx.arc(x, y, this.radius, 0, 2 * Math.PI)
+            // ctx.rect(50, 50, 100, 100)
+            ctx.fill()
+        }
+    }
+
+    class BoxNode {
+
+        constructor(x, y) {
+            this.type = 'box'
+            this.radius = 50
+            this._width = this.radius * 2
+            this._height = this.radius * 2
+            this._x = x 
+            this._y = y
+        }
+
+        draw(ctx) {
+            console.log('node draw')
+            ctx.fillStyle = '#09c'
+            ctx.beginPath()
+            let x = this._x + this._width / 2 
+            let y = this._y + this._height / 2
+            ctx.rect(this._x, this._y, this._width, this._height)
+            // ctx.rect(50, 50, 100, 100)
+            ctx.fill()
+        }
+    }
+
+
+
+    
+
+    let red = new CircleNode(50, 50)
+    // red.moveable = true
+    // console.log('circle', red)
+    red.color = 'rgb(255, 0, 0, 1)'
+
+    let green = new CircleNode(100, 50)
+    green.color = 'rgb(0, 255, 0, 1)'
+
+    let blue = new CircleNode(80, 80)
+    blue.color = 'rgb(0, 0, 255, 1)'
+
+    let box = new BoxNode(200, 200)
+    // let img = new ImageNode(200, 200)
+    let nodes = [
+        // {
+        //     x: 50,
+        //     y: 50,
+        //     color: 'rgb(255, 0, 0, 1)',
+        // },
+        // {
+        //     x: 100,
+        //     y: 50,
+        //     color: 'rgb(0, 255, 0, 1)',
+        // },
+        // {
+        //     x: 80,
+        //     y: 80,
+        //     color: 'rgb(0, 0, 255, 1)',
+        // },
+        red,
+        // box,
+        green,
+        blue,
+        // {
+        //     type: 'image',
+        //     x: 400,
+        //     y: 400,
+        //     src: './light.png',
+        //     moveable: true,
+        // },
+        // {
+        //     type: 'image',
+        //     x: 300,
+        //     y: 300,
+        //     src: './server.png',
+        //     moveable: true,
+        // },
+    ]
+
+    console.log('nodes', nodes)
+
+    let canvas = document.getElementById('canvas')
+    let editor = new Canvasx(canvas, nodes, {
+        width: 800,
+        height: 500,
+    })
+
+    // editor.setNodes
+
+    // for (let node of nodes) {
+    //     // if (node.type === 'circle') {
+    //     //     node._width = 100
+    //     //     node._height = 100
+    //     //     node._x = node.x - node._width / 2 
+    //     //     node._y = node.y - node._height / 2
+    //     // }
+    //     if (node.type === 'image') {
+    //         node._width = 100
+    //         node._height = 100
+    //         node._x = node.x - node._width / 2 
+    //         node._y = node.y - node._height / 2
+    //     }
+    // }
+
+
+</script>
+</body>
+</html>
