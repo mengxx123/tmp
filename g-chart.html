@@ -41,6 +41,7 @@
         <canvas class="canvas" id="canvas" width="640" height="640" style="width: 640px; height: 640px;" >
             
         </canvas>
+        <!-- <text> -->
     </div>
 
     <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
@@ -349,7 +350,12 @@
                 let item = chartData[i]
                 console.log('in找', item.name)
                 let targetIndex = oldChartData.findIndex(_item => _item.name === item.name)
-                if (targetIndex === -1 || targetIndex >= maxLength) {
+                // 新增的
+                if (targetIndex === -1) {
+                    item.type = 'in'
+                }
+                // 排名上升的
+                if (targetIndex !== -1 && targetIndex >= maxLength) {
                     item.type = 'in'
                 }
             }
@@ -359,18 +365,16 @@
                 console.log('out找', item.name)
                 let targetIndex = chartData.findIndex(_item => _item.name === item.name)
                 console.log('targetIndex', targetIndex)
+                // 删除了的
                 if (targetIndex === -1) {
                     chartData.push({
                         ...oldChartData[i],
                         type: 'out'
                     })
                 }
+                // 排名降低的
                 if (targetIndex !== -1 && targetIndex >= maxLength) {
                     chartData[targetIndex].type = 'out'
-                    // chartData.push({
-                    //     ...oldChartData[i],
-                    //     type: 'out'
-                    // })
                 }
             }
             chartData = orderList(chartData)
