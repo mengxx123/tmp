@@ -155,7 +155,7 @@
 
         let textWidth = 80 // TODO
 
-        let maxLength = 3
+        let maxLength = 2
 
         const moment = window.moment
 
@@ -185,7 +185,7 @@
 天河区,2000,2020-01-04
 海珠区,700,2020-01-04
 白云区,1100,2020-01-04
-番禺区,100,2020-01-04
+番禺区,4000,2020-01-04
 
 `
 //         tableText = `天河区,1000,2020-01-01
@@ -205,12 +205,8 @@
 // 番禺区,300,2020-01-01
 
 // 天河区,1200,2020-01-02
-// 海珠区,1000,2020-01-02
-// 白云区,400,2020-01-02
-
-// 天河区,1000,2020-01-03
-// 海珠区,500,2020-01-03
-// 番禺区,300,2020-01-03
+// 海珠区,800,2020-01-02
+// 番禺区,1000,2020-01-02
 // `
 
         let allData = parseTableData(tableText)
@@ -284,9 +280,13 @@
             }
             for (let i = 0 ; i < chartData.length; i++) {
                 let item = chartData[i]
-                if (item.index > 3) {
+                if (item.index > maxLength) {
                     continue
                 }
+                if (item.index === maxLength && item.type !== 'out') {
+                    continue
+                }
+
                 ctx.globalAlpha = item.opacity
                 // console.log('item', item)
                 // 圆角矩形
@@ -343,23 +343,34 @@
                 item.type = ''
                 return item
             })
+            chartData = orderList(chartData)
             // in
-            for (let i = 0 ; i < chartData.length; i++) {
+            for (let i = 0 ; i < chartData.length && i < maxLength; i++) {
                 let item = chartData[i]
+                console.log('in找', item.name)
                 let targetIndex = oldChartData.findIndex(_item => _item.name === item.name)
-                if (targetIndex === -1) {
+                if (targetIndex === -1 || targetIndex >= maxLength) {
                     item.type = 'in'
                 }
             }
             // out
-            for (let i = 0 ; i < oldChartData.length; i++) {
+            for (let i = 0 ; i < oldChartData.length && i < maxLength; i++) {
                 let item = oldChartData[i]
+                console.log('out找', item.name)
                 let targetIndex = chartData.findIndex(_item => _item.name === item.name)
+                console.log('targetIndex', targetIndex)
                 if (targetIndex === -1) {
                     chartData.push({
                         ...oldChartData[i],
                         type: 'out'
                     })
+                }
+                if (targetIndex !== -1 && targetIndex >= maxLength) {
+                    chartData[targetIndex].type = 'out'
+                    // chartData.push({
+                    //     ...oldChartData[i],
+                    //     type: 'out'
+                    // })
                 }
             }
             chartData = orderList(chartData)
